@@ -30,10 +30,8 @@ export default {
                 height: image.height
             });
             const camera = new Camera();
-            const scene = new Scene();
+            const scene = new Scene({ width: 400, height: 600 });
             const renderer = new Renderer({
-                width: 400,
-                height: 600,
                 plugins: [...mousePlugins],
                 scene,
                 camera

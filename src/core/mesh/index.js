@@ -25,9 +25,30 @@ export class Mesh {
         };
     }
 
+    scaleX(s) {
+        this.style.width *= s;
+    }
+
+    scaleY(s) {
+        this.style.height *= s;
+    }
+
+    setWidth(width) {
+        this.style.width = width;
+    }
+
+    setHeight(height) {
+        this.style.height = height;
+    }
+
     transform(x, y) {
         this.position.x += x;
         this.position.y += y;
+    }
+
+    move(x, y) {
+        this.position.x = x;
+        this.position.y = y;
     }
 
     hover() {

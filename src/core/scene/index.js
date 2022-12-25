@@ -1,5 +1,8 @@
 export class Scene {
-    constructor() {
+    constructor(options) {
+        const { width = 500, height = 500 } = options;
+        this.width = width;
+        this.height = height;
         this.meshes = [];
     }
 

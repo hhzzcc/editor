@@ -1,21 +1,21 @@
 export class Renderer {
     constructor(options) {
         const {
-            width = 400,
-            height = 600,
             plugins = [],
             scene = null,
-            camera = null
+            camera = null,
+            $parent = document.body
         } = options;
         this.canvas = document.createElement("canvas");
-        this.canvas.width = width;
-        this.canvas.height = height;
+        this.canvas.width = scene.width;
+        this.canvas.height = scene.height;
         this.ctx = this.canvas.getContext("2d");
+        this.$parent = $parent;
         this.plugins = plugins;
         this.scene = scene;
         this.camera = camera;
 
-        document.body.appendChild(this.canvas);
+        $parent.appendChild(this.canvas);
     }
 
     installPlugin() {
@@ -25,13 +25,17 @@ export class Renderer {
         }
     }
 
-    render() {
-        // debugger;
-        const { scene, ctx, canvas } = this;
-        const { width, height } = canvas;
-        const { meshes } = scene;
+    clear() {
+        const { scene } = this;
+        const { width, height } = scene;
+        this.ctx.clearRect(0, 0, width, height);
+    }
 
-        ctx.clearRect(0, 0, width, height);
+    render() {
+        const { scene, ctx } = this;
+        const { width, height, meshes } = scene;
+
+        this.clear();
         for (let i = 0; i < meshes.length; i++) {
             const mesh = meshes[i];
             mesh.render({ ctx });

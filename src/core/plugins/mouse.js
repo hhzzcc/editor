@@ -1,3 +1,8 @@
+import { Renderer } from "../../core/renderer";
+import { Camera } from "../../core/camera";
+import { Scene } from "../../core/scene";
+import { Mesh } from "../../core/mesh";
+
 function isCollection(mouse, mesh) {
     return (
         mouse.layerX > mesh.position.x &&
@@ -9,65 +14,99 @@ function isCollection(mouse, mesh) {
 
 export const mouseHoverPlugin = {
     install(renderer) {
-        const { scene, canvas } = renderer;
-        const { meshes } = scene;
+        const { scene, canvas, $parent } = renderer;
+        const { meshes, width, height } = scene;
         let mousedown = false;
-        let mousedownLeft = null;
-        let mousedownTop = null;
-        let dragMeshes = [];
+        let mousedownLeft = 0;
+        let mousedownTop = 0;
+        let mousedownMeshes = [];
+        let boxRenderer = null;
+        let boxMesh = null;
 
         canvas.addEventListener("mousedown", (v) => {
-            dragMeshes = [];
             mousedown = true;
             mousedownLeft = v.layerX;
             mousedownTop = v.layerY;
-        });
 
-        canvas.addEventListener("mousemove", (v) => {
-            for (let i = 0; i < dragMeshes.length; i++) {
-                const mesh = dragMeshes[i];
-                mesh.transform(
-                    v.layerX - mousedownLeft,
-                    v.layerY - mousedownTop
-                );
-                mousedownLeft = v.layerX;
-                mousedownTop = v.layerY;
+            if (boxRenderer) {
+                boxMesh.move(v.layerX, v.layerY);
             }
 
-            if (!dragMeshes.length) {
-                for (let i = 0; i < meshes.length; i++) {
-                    const mesh = meshes[i];
-                    if (isCollection(v, mesh)) {
-                        mesh.hover();
-                        if (mousedown) {
-                            dragMeshes.push(mesh);
-                        }
-                    } else {
-                        mesh.unHover();
-                    }
+            // click、hover
+            for (let i = 0; i < meshes.length; i++) {
+                const mesh = meshes[i];
+                if (isCollection(v, mesh)) {
+                    mesh.hover();
+                    mesh.focus();
+                    mousedownMeshes.push(mesh);
+                } else {
+                    mesh.unHover();
+                    mesh.blur();
                 }
             }
 
             renderer.render();
         });
 
-        canvas.addEventListener("click", (v) => {
-            for (let i = 0; i < meshes.length; i++) {
-                const mesh = meshes[i];
-                if (isCollection(v, mesh)) {
-                    mesh.focus();
+        canvas.addEventListener("mousemove", (v) => {
+            if (!mousedownMeshes.length) {
+                if (mousedown) {
+                    if (!boxRenderer) {
+                        boxMesh = new Mesh({
+                            width: 100,
+                            height: 100
+                        });
+                        const camera = new Camera();
+                        const scene = new Scene({ width, height });
+                        boxRenderer = new Renderer({
+                            scene,
+                            camera,
+                            $parent
+                        });
+                        boxMesh.focus();
+                        boxMesh.move(v.layerX, v.layerY);
+                        scene.add(boxMesh);
+                        boxRenderer.canvas.style.position = "absolute";
+                        boxRenderer.canvas.style.top = "0";
+                        boxRenderer.canvas.style.left = "0";
+                        boxRenderer.canvas.style.zIndex = "1";
+                        boxRenderer.canvas.style.pointerEvents = "none";
+                    }
+                    boxRenderer.canvas.style.display = "";
+                    boxMesh.setWidth(v.layerX - boxMesh.position.x);
+                    boxMesh.setHeight(v.layerY - boxMesh.position.y);
+                    boxRenderer.render();
                 } else {
-                    mesh.blur();
+                    for (let i = 0; i < meshes.length; i++) {
+                        const mesh = meshes[i];
+                        if (isCollection(v, mesh)) {
+                            mesh.hover();
+                        } else {
+                            mesh.unHover();
+                        }
+                    }
+                }
+            } else {
+                for (let i = 0; i < mousedownMeshes.length; i++) {
+                    const mesh = mousedownMeshes[i];
+                    mesh.transform(
+                        v.layerX - mousedownLeft,
+                        v.layerY - mousedownTop
+                    );
                 }
             }
+
+            mousedownLeft = v.layerX;
+            mousedownTop = v.layerY;
             renderer.render();
         });
 
         document.addEventListener("mouseup", () => {
             mousedown = false;
-            mousedownLeft = null;
-            mousedownTop = null;
-            dragMeshes = [];
+
+            boxRenderer.canvas.style.display = "none";
+            boxRenderer && boxRenderer.clear();
+            mousedownMeshes = [];
         });
     }
 };
