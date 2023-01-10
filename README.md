@@ -1,24 +1,15 @@
-# editor
+# 描述
 
-## Project setup
+使用 canvas 手撸一个编辑器
+
+## 安装依赖
+
 ```
 yarn install
 ```
 
-### Compiles and hot-reloads for development
+### 运行
+
 ```
 yarn serve
 ```
-
-### Compiles and minifies for production
-```
-yarn build
-```
-
-### Lints and fixes files
-```
-yarn lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
