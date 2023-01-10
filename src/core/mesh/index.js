@@ -5,7 +5,10 @@ export class Mesh {
             y = 0,
             width = 100,
             height = 100,
-            backgroundImage = null
+            minWidth = 30,
+            minHeight = 30,
+            backgroundImage = null,
+            radius = 6
         } = options;
 
         this.position = {
@@ -16,13 +19,31 @@ export class Mesh {
         this.style = {
             width,
             height,
-            backgroundImage
+            minWidth,
+            minHeight,
+            backgroundImage,
+            radius
         };
 
         this.type = {
             focus: false,
             hover: false
         };
+    }
+
+    getCenter() {
+        return {
+            x: this.position.x + this.style.width / 2,
+            y: this.position.y + this.style.height / 2
+        };
+    }
+
+    setX(x) {
+        this.position.x = x;
+    }
+
+    setY(y) {
+        this.position.y = y;
     }
 
     scaleX(s) {
@@ -34,11 +55,13 @@ export class Mesh {
     }
 
     setWidth(width) {
-        this.style.width = width;
+        this.style.width =
+            width < this.style.minWidth ? this.style.minWidth : width;
     }
 
     setHeight(height) {
-        this.style.height = height;
+        this.style.height =
+            height < this.style.minHeight ? this.style.minHeight : height;
     }
 
     transform(x, y) {
@@ -73,7 +96,7 @@ export class Mesh {
         if (!focus && !hover) return;
 
         const { x, y } = position;
-        const { width, height } = style;
+        const { width, height, radius } = style;
         ctx.beginPath();
         ctx.moveTo(x, y);
         ctx.lineTo(x + width, y);
@@ -81,7 +104,32 @@ export class Mesh {
         ctx.lineTo(x, y + height);
         ctx.lineTo(x, y);
         ctx.strokeStyle = "blue";
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        if (!focus) return;
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, 2 * Math.PI);
+        ctx.fillStyle = "#fff";
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(x + width, y, radius, 0, 2 * Math.PI);
+        ctx.fillStyle = "#fff";
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(x + width, y + height, radius, 0, 2 * Math.PI);
+        ctx.fillStyle = "#fff";
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(x, y + height, radius, 0, 2 * Math.PI);
+        ctx.fillStyle = "#fff";
+        ctx.fill();
         ctx.stroke();
     }
 
@@ -91,21 +139,11 @@ export class Mesh {
         if (!backgroundImage) return;
 
         const { x, y } = position;
-        ctx.drawImage(
-            backgroundImage,
-            0,
-            0,
-            width,
-            height,
-            x,
-            y,
-            width,
-            height
-        );
+        ctx.drawImage(backgroundImage, x, y, width, height);
     }
 
     render({ ctx }) {
-        this.renderBorder({ ctx });
         this.renderBackgroundImage({ ctx });
+        this.renderBorder({ ctx });
     }
 }
