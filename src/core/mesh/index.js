@@ -65,7 +65,15 @@ export class Mesh {
     }
 
     transform(x, y) {
+        this.transformX(x);
+        this.transformY(y);
+    }
+
+    transformX(x) {
         this.position.x += x;
+    }
+
+    transformY(y) {
         this.position.y += y;
     }
 

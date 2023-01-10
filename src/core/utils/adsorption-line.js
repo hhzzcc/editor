@@ -243,38 +243,18 @@ export class AdsorptionLine {
 
             xType = resultX.xType;
             yType = resultY.yType;
-
-            // const { x: originCenterX, y: originCenterY } =
-            //     originMesh.getCenter();
-            // const { x: targetCenterX, y: targetCenterY } =
-            //     targetMesh.getCenter();
-
-            // if (Math.abs(originCenterY - targetY - targetHeight / 2) < 10) {
-            //     this.meshX.focus();
-            //     this.meshX.setY(targetY + targetHeight / 2);
-            // }
-
-            // if (Math.abs(originCenterY - targetCenterY) < 10) {
-            //     this.meshX.focus();
-            //     this.meshX.setY(targetCenterY);
-            // }
-            // if (Math.abs(originCenterY - targetCenterY) < 10) {
-            //     this.meshX.focus();
-            //     this.meshX.setY(targetCenterY);
-            // }
-            // if (Math.abs(originCenterY - targetCenterY) < 10) {
-            //     this.meshX.focus();
-            //     this.meshX.setY(targetCenterY);
-            // }
         }
 
         this.renderer.render();
 
         return {
+            // 吸附状态
             xType,
             yType,
-            x: this.meshY.type.focus ? this.meshY.position.x : null,
-            y: this.meshX.type.focus ? this.meshX.position.y : null
+
+            // 吸附位置
+            x: xType ? this.meshY.position.x : null,
+            y: yType ? this.meshX.position.y : null
         };
     }
 
