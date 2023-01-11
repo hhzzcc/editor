@@ -1,30 +1,50 @@
 import { Selection } from "../utils/selection";
 import { AdsorptionLine } from "../utils/adsorption-line";
+import { handleSelectionCollectMesh } from "../utils/handles/selection-collect-mesh";
+import { handleHoverMesh } from "../utils/handles/hover-mesh";
 import {
-    handleSelectionCollectMesh,
-    handleHoverMesh,
     handleStartDragMesh,
-    handleDragMesh,
+    handleDragMesh
+} from "../utils/handles/drag-mesh";
+import {
     handleDragMeshScale,
-    handleDragMeshTransform
-} from "../utils/handle";
+    handleDragMeshXScale,
+    handleDragMeshYScale
+} from "../utils/handles/drag-mesh-scale";
+import { handleDragMeshTransform } from "../utils/handles/drag-mesh-transform";
 
 export const mouseHoverPlugin = {
     install(renderer) {
         const { scene, canvas, $parent } = renderer;
         const { meshes, width, height } = scene;
-        let mousedown = false;
-        let prevMousedownLeft = 0;
-        let prevMousedownTop = 0;
-        let dragMeshes = [];
-        let dragTransformMeshes = [];
-        let dragScaleMeshes = [];
+        let mousedown,
+            prevMousedownLeft,
+            prevMousedownTop,
+            dragMeshes,
+            dragTransformMeshes,
+            dragScaleMeshes,
+            dragScaleXMeshes,
+            dragScaleYMeshes;
+
+        function clear() {
+            mousedown = false;
+            prevMousedownLeft = null;
+            prevMousedownTop = null;
+            dragMeshes = [];
+            dragTransformMeshes = [];
+            dragScaleMeshes = [];
+            dragScaleXMeshes = [];
+            dragScaleYMeshes = [];
+        }
+        clear();
 
         const selection = new Selection({ width, height, $parent });
         const adsorptionLine = new AdsorptionLine({ width, height, $parent });
 
         document.addEventListener("mousedown", (v) => {
             mousedown = true;
+            prevMousedownLeft = v.layerX;
+            prevMousedownTop = v.layerY;
             selection.ready(v.layerX, v.layerY);
             adsorptionLine.ready();
 
@@ -46,7 +66,7 @@ export const mouseHoverPlugin = {
                     handleHoverMesh(v, meshes);
                 }
             } else {
-                // 拖拽mesh做缩放
+                // 拖拽mesh做xy轴缩放
                 if (dragScaleMeshes.length) {
                     handleDragMeshScale(
                         dragScaleMeshes,
@@ -55,13 +75,32 @@ export const mouseHoverPlugin = {
                         prevMousedownLeft,
                         prevMousedownTop
                     );
-                } else if (dragTransformMeshes.length) {
+                }
+                // 拖拽mesh做x轴缩放
+                else if (dragScaleXMeshes.length) {
+                    handleDragMeshXScale(
+                        dragScaleXMeshes,
+                        v.layerX,
+                        prevMousedownLeft
+                    );
+                }
+                // 拖拽mesh做y轴缩放
+                else if (dragScaleYMeshes.length) {
+                    handleDragMeshYScale(
+                        dragScaleYMeshes,
+                        v.layerY,
+                        prevMousedownTop
+                    );
+                }
+                // 拖拽mesh做移动
+                else if (dragTransformMeshes.length) {
                     handleDragMeshTransform({
                         mouse: v,
                         meshes: dragTransformMeshes,
                         prevMousedownLeft,
                         prevMousedownTop,
-                        transformCb(mesh) {
+                        onTransform(mesh) {
+                            // 渲染吸附线
                             const { x, y, xType, yType } =
                                 adsorptionLine.update({
                                     originMesh: mesh,
@@ -77,15 +116,21 @@ export const mouseHoverPlugin = {
                         }
                     });
                 } else {
-                    // 鼠标拖拽mesh做移动
+                    // 拖拽mesh
                     handleDragMesh({
                         mouse: v,
                         meshes: dragMeshes,
-                        dragMeshMoveCb() {
+                        onDragMeshMove() {
                             dragTransformMeshes = dragMeshes;
                         },
-                        dragMeshScaleCb() {
+                        onDragMeshScale() {
                             dragScaleMeshes = dragMeshes;
+                        },
+                        onDragMeshScaleX() {
+                            dragScaleXMeshes = dragMeshes;
+                        },
+                        onDragMeshScaleY() {
+                            dragScaleYMeshes = dragMeshes;
                         }
                     });
                 }
@@ -97,10 +142,7 @@ export const mouseHoverPlugin = {
         });
 
         document.addEventListener("mouseup", () => {
-            mousedown = false;
-            dragMeshes = [];
-            dragTransformMeshes = [];
-            dragScaleMeshes = [];
+            clear();
             selection.hide();
             adsorptionLine.hide();
         });

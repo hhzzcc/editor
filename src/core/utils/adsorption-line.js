@@ -3,6 +3,8 @@ import { Camera } from "../../core/camera";
 import { Scene } from "../../core/scene";
 import { Mesh } from "../../core/mesh";
 
+// 吸附距离
+export const ADSORPTION_DISTANCE = 5;
 export class AdsorptionLine {
     constructor({ width, height, $parent }) {
         const meshX = new Mesh({
@@ -12,7 +14,10 @@ export class AdsorptionLine {
             height: 0.5,
             minWidth: 0,
             minHeight: 0,
-            radius: null
+            radius: null,
+            borderWidth: 0.5,
+            borderColor: "#F56C6C",
+            ableScale: false
         });
         const meshY = new Mesh({
             y: 0,
@@ -21,7 +26,10 @@ export class AdsorptionLine {
             height,
             minWidth: 0,
             minHeight: 0,
-            radius: null
+            radius: null,
+            borderWidth: 0.5,
+            borderColor: "#F56C6C",
+            ableScale: false
         });
         const camera = new Camera();
         const scene = new Scene({ width, height });
@@ -62,55 +70,55 @@ export class AdsorptionLine {
     }) {
         let xType = null;
         // 中间和中间
-        if (Math.abs(originCenterX - targetCenterX) < 10) {
+        if (Math.abs(originCenterX - targetCenterX) < ADSORPTION_DISTANCE) {
             meshY.focus();
             meshY.setX(targetCenterX);
             xType = "center";
         }
         // 中间和左边
-        else if (Math.abs(originCenterX - targetX) < 10) {
+        else if (Math.abs(originCenterX - targetX) < ADSORPTION_DISTANCE) {
             meshY.focus();
             meshY.setX(targetX);
             xType = "center";
         }
         // 中间和右边
-        else if (Math.abs(originCenterX - targetRightX) < 10) {
+        else if (Math.abs(originCenterX - targetRightX) < ADSORPTION_DISTANCE) {
             meshY.focus();
             meshY.setX(targetRightX);
             xType = "center";
         }
         // 左边和中间
-        else if (Math.abs(originX - targetCenterX) < 10) {
+        else if (Math.abs(originX - targetCenterX) < ADSORPTION_DISTANCE) {
             meshY.focus();
             meshY.setX(targetCenterX);
             xType = "left";
         }
         // 左边和右边
-        else if (Math.abs(originX - targetRightX) < 10) {
+        else if (Math.abs(originX - targetRightX) < ADSORPTION_DISTANCE) {
             meshY.focus();
             meshY.setX(targetRightX);
             xType = "left";
         }
         // 左边和左边
-        else if (Math.abs(originX - targetX) < 10) {
+        else if (Math.abs(originX - targetX) < ADSORPTION_DISTANCE) {
             meshY.focus();
             meshY.setX(targetX);
             xType = "left";
         }
         // 右边和中间
-        else if (Math.abs(originRightX - targetCenterX) < 10) {
+        else if (Math.abs(originRightX - targetCenterX) < ADSORPTION_DISTANCE) {
             meshY.focus();
             meshY.setX(targetCenterX);
             xType = "right";
         }
         // 右边和左边
-        else if (Math.abs(originRightX - targetX) < 10) {
+        else if (Math.abs(originRightX - targetX) < ADSORPTION_DISTANCE) {
             meshY.focus();
             meshY.setX(targetX);
             xType = "right";
         }
         // 右边和右边
-        else if (Math.abs(originRightX - targetRightX) < 10) {
+        else if (Math.abs(originRightX - targetRightX) < ADSORPTION_DISTANCE) {
             meshY.focus();
             meshY.setX(targetRightX);
             xType = "right";
@@ -132,55 +140,55 @@ export class AdsorptionLine {
     }) {
         let yType = null;
         // 中间和中间
-        if (Math.abs(originCenterY - targetCenterY) < 10) {
+        if (Math.abs(originCenterY - targetCenterY) < ADSORPTION_DISTANCE) {
             meshX.focus();
             meshX.setY(targetCenterY);
             yType = "center";
         }
-        // 中间和左边
-        else if (Math.abs(originCenterY - targetY) < 10) {
+        // 中间和上边
+        else if (Math.abs(originCenterY - targetY) < ADSORPTION_DISTANCE) {
             meshX.focus();
             meshX.setY(targetY);
             yType = "center";
         }
-        // 中间和右边
-        else if (Math.abs(originCenterY - targetRightY) < 10) {
+        // 中间和下边
+        else if (Math.abs(originCenterY - targetRightY) < ADSORPTION_DISTANCE) {
             meshX.focus();
             meshX.setY(targetRightY);
             yType = "center";
         }
-        // 左边和中间
-        else if (Math.abs(originY - targetCenterY) < 10) {
+        // 上边和中间
+        else if (Math.abs(originY - targetCenterY) < ADSORPTION_DISTANCE) {
             meshX.focus();
             meshX.setY(targetCenterY);
             yType = "top";
         }
-        // 左边和右边
-        else if (Math.abs(originY - targetRightY) < 10) {
+        // 上边和下边
+        else if (Math.abs(originY - targetRightY) < ADSORPTION_DISTANCE) {
             meshX.focus();
             meshX.setY(targetRightY);
             yType = "top";
         }
-        // 左边和左边
-        else if (Math.abs(originY - targetY) < 10) {
+        // 上边和上边
+        else if (Math.abs(originY - targetY) < ADSORPTION_DISTANCE) {
             meshX.focus();
             meshX.setY(targetY);
             yType = "top";
         }
-        // 右边和中间
-        else if (Math.abs(originRightY - targetCenterY) < 10) {
+        // 下边和中间
+        else if (Math.abs(originRightY - targetCenterY) < ADSORPTION_DISTANCE) {
             meshX.focus();
             meshX.setY(targetCenterY);
             yType = "bottom";
         }
-        // 右边和左边
-        else if (Math.abs(originRightY - targetY) < 10) {
+        // 下边和上边
+        else if (Math.abs(originRightY - targetY) < ADSORPTION_DISTANCE) {
             meshX.focus();
             meshX.setY(targetY);
             yType = "bottom";
         }
-        // 右边和右边
-        else if (Math.abs(originRightY - targetRightY) < 10) {
+        // 下边和下边
+        else if (Math.abs(originRightY - targetRightY) < ADSORPTION_DISTANCE) {
             meshX.focus();
             meshX.setY(targetRightY);
             yType = "bottom";
@@ -188,8 +196,6 @@ export class AdsorptionLine {
 
         return { yType };
     }
-
-    computedAdsorptionY() {}
 
     update({ originMesh, targetMeshes }) {
         this.meshX.blur();
@@ -202,20 +208,17 @@ export class AdsorptionLine {
             if (targetMesh === originMesh) continue;
 
             const { x: originX, y: originY } = originMesh.position;
-            const { width: originWidth, height: originHeight } =
-                originMesh.style;
             const { x: originCenterX, y: originCenterY } =
-                originMesh.getCenter();
-            const originRightX = originX + originWidth;
-            const originRightY = originY + originHeight;
+                originMesh.getCenterPosition();
+            const { x: originRightX, y: originRightY } =
+                originMesh.getRightPosition();
 
             const { x: targetX, y: targetY } = targetMesh.position;
-            const { width: targetWidth, height: targetHeight } =
-                targetMesh.style;
             const { x: targetCenterX, y: targetCenterY } =
-                targetMesh.getCenter();
-            const targetRightX = targetX + targetWidth;
-            const targetRightY = targetY + targetHeight;
+                targetMesh.getCenterPosition();
+
+            const { x: targetRightX, y: targetRightY } =
+                targetMesh.getRightPosition();
 
             const resultX = this.updateAdsorptionX({
                 meshY: this.meshY,

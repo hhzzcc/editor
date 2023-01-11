@@ -1,67 +1,159 @@
-function isCollectCircular(origin, center, r) {
+function isCollectCircular({
+    originX,
+    originY,
+    targetCenterX,
+    targetCenterY,
+    radius
+}) {
     return (
-        Math.pow(origin.x - center.x, 2) + Math.pow(origin.y - center.y, 2) <
-        r * r
+        Math.pow(originX - targetCenterX, 2) +
+            Math.pow(originY - targetCenterY, 2) <
+        radius * radius
+    );
+}
+
+function isCollectRect({
+    originX,
+    originY,
+    targetX,
+    targetY,
+    targetWidth,
+    targetHeight
+}) {
+    return (
+        originX > targetX &&
+        originX < targetX + targetWidth &&
+        originY > targetY &&
+        originY < targetY + targetHeight
     );
 }
 
 // 鼠标碰撞mesh
 export function isMouseCollectMesh(mouse, mesh) {
-    const lx = mesh.position.x;
-    const rx = mesh.position.x + mesh.style.width;
-    const ly = mesh.position.y;
-    const ry = mesh.position.y + mesh.style.height;
-    const isCollectRect =
-        mouse.layerX > lx &&
-        mouse.layerX < rx &&
-        mouse.layerY > ly &&
-        mouse.layerY < ry;
+    const { x: leftX, y: topY } = mesh.position;
+    const { x: rightX, y: bottomY } = mesh.getRightPosition();
+    const originX = mouse.layerX;
+    const originY = mouse.layerY;
+    const isCollectContent =
+        originX > leftX &&
+        originX < rightX &&
+        originY > topY &&
+        originY < bottomY;
 
-    if (mesh.type.focus) {
-        const origin = { x: mouse.layerX, y: mouse.layerY };
-        const r = mesh.style.radius;
-        const isCollectRadiusLeftTop = isCollectCircular(
-            origin,
-            { x: lx, y: ly },
-            r
-        );
-        const isCollectRadiusRightTop = isCollectCircular(
-            origin,
-            { x: rx, y: ly },
-            r
-        );
-        const isCollectRadiusRightBottom = isCollectCircular(
-            origin,
-            { x: rx, y: ry },
-            r
-        );
-        const isCollectRadiusLeftBottom = isCollectCircular(
-            origin,
-            { x: lx, y: ry },
-            r
-        );
-        const isCollectRadius =
-            isCollectRadiusLeftTop ||
-            isCollectRadiusRightTop ||
-            isCollectRadiusRightBottom ||
-            isCollectRadiusLeftBottom;
+    if (mesh.type.focus && mesh.type.ableScale) {
+        const { x: centerX, y: centerY } = mesh.getCenterPosition();
+        const { borderRectWidth, borderRectHeight, radius } = mesh.style;
+
+        const isCollectTopBorderRect = isCollectRect({
+            originX,
+            originY,
+            targetX: centerX - borderRectWidth / 2,
+            targetY: topY - borderRectHeight / 2,
+            targetWidth: borderRectWidth,
+            targetHeight: borderRectHeight
+        });
+
+        const isCollectRightBorderRect = isCollectRect({
+            originX,
+            originY,
+            targetX: rightX - borderRectHeight / 2,
+            targetY: centerY - borderRectWidth / 2,
+            targetWidth: borderRectHeight,
+            targetHeight: borderRectWidth
+        });
+
+        const isCollectBottomBorderRect = isCollectRect({
+            originX,
+            originY,
+            targetX: centerX - borderRectWidth / 2,
+            targetY: bottomY - borderRectHeight / 2,
+            targetWidth: borderRectWidth,
+            targetHeight: borderRectHeight
+        });
+
+        const isCollectLeftBorderRect = isCollectRect({
+            originX,
+            originY,
+            targetX: leftX - borderRectHeight / 2,
+            targetY: centerY - borderRectWidth / 2,
+            targetWidth: borderRectHeight,
+            targetHeight: borderRectWidth
+        });
+
+        // 碰撞缩放矩形
+        const isCollectBorderRect =
+            isCollectTopBorderRect ||
+            isCollectRightBorderRect ||
+            isCollectBottomBorderRect ||
+            isCollectLeftBorderRect;
+
+        const isCollectBorderLeftTopCircular = isCollectCircular({
+            originX,
+            originY,
+            targetCenterX: leftX,
+            targetCenterY: topY,
+            radius
+        });
+        const isCollectBorderRightTopCircular = isCollectCircular({
+            originX,
+            originY,
+            targetCenterX: rightX,
+            targetCenterY: topY,
+            radius
+        });
+        const isCollectBorderRightBottomCircular = isCollectCircular({
+            originX,
+            originY,
+            targetCenterX: rightX,
+            targetCenterY: bottomY,
+            radius
+        });
+        const isCollectBorderLeftBottomCircular = isCollectCircular({
+            originX,
+            originY,
+            targetCenterX: leftX,
+            targetCenterY: bottomY,
+            radius
+        });
+
+        // 碰撞缩放圆形
+        const isCollectBorderCircular =
+            isCollectBorderLeftTopCircular ||
+            isCollectBorderRightTopCircular ||
+            isCollectBorderRightBottomCircular ||
+            isCollectBorderLeftBottomCircular;
+
         return {
-            isCollectRect,
-            isCollectRadius,
-            isCollectRadiusLeftTop,
-            isCollectRadiusRightTop,
-            isCollectRadiusRightBottom,
-            isCollectRadiusLeftBottom
+            isCollectContent,
+
+            isCollectBorderRect,
+            isCollectTopBorderRect,
+            isCollectRightBorderRect,
+            isCollectBottomBorderRect,
+            isCollectLeftBorderRect,
+
+            isCollectBorderCircular,
+            isCollectBorderLeftTopCircular,
+            isCollectBorderRightTopCircular,
+            isCollectBorderRightBottomCircular,
+            isCollectBorderLeftBottomCircular
         };
     }
 
     return {
-        isCollectRect,
-        isCollectRadius: false,
-        isCollectRadiusLeftTop: false,
-        isCollectRadiusRightTop: false,
-        isCollectRadiusRightBottom: false,
-        isCollectRadiusLeftBottom: false
+        isCollectContent,
+
+        isCollectBorderRect: false,
+        isCollectTopBorderRect: false,
+        isCollectRightBorderRect: false,
+        isCollectBottomBorderRect: false,
+        isCollectLeftBorderRect: false,
+
+        isCollectBorderCircular: false,
+        isCollectBorderLeftTopCircular: false,
+        isCollectBorderRightTopCircular: false,
+        isCollectBorderRightBottomCircular: false,
+        isCollectBorderLeftBottomCircular: false
     };
 }
 

@@ -11,7 +11,9 @@ export class Selection {
             height: 0,
             minWidth: 0,
             minHeight: 0,
-            radius: null
+            radius: null,
+            borderWidth: 1,
+            ableScale: false
         });
         const camera = new Camera();
         const scene = new Scene({ width, height });
