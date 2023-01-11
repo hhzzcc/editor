@@ -1,4 +1,4 @@
-import { ADSORPTION_DISTANCE } from "../adsorption-line";
+import { ADSORPTION_DISTANCE } from "../constants";
 
 let offsetX = 0;
 let offsetY = 0;
@@ -32,11 +32,6 @@ export function handleDragMeshTransform({
     prevMousedownTop,
     onTransform
 }) {
-    if (prevMousedownLeft === null || prevMousedownTop === null) {
-        offsetX = 0;
-        offsetY = 0;
-    }
-
     for (let i = 0; i < meshes.length; i++) {
         const mesh = meshes[i];
         const { x, y, xType, yType } = onTransform(mesh);
@@ -95,4 +90,9 @@ export function handleDragMeshTransform({
             mesh.transformY(transformDragY);
         }
     }
+
+    return function clear() {
+        offsetX = 0;
+        offsetY = 0;
+    };
 }

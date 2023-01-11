@@ -1,10 +1,9 @@
-import { Renderer } from "../../core/renderer";
-import { Camera } from "../../core/camera";
-import { Scene } from "../../core/scene";
-import { Mesh } from "../../core/mesh";
+import { Renderer } from "../../../core/renderer";
+import { Camera } from "../../../core/camera";
+import { Scene } from "../../../core/scene";
+import { Mesh } from "../../../core/mesh";
+import { ADSORPTION_DISTANCE } from "../constants";
 
-// 吸附距离
-export const ADSORPTION_DISTANCE = 5;
 export class AdsorptionLine {
     constructor({ width, height, $parent }) {
         const meshX = new Mesh({

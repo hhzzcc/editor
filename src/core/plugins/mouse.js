@@ -1,5 +1,7 @@
-import { Selection } from "../utils/selection";
-import { AdsorptionLine } from "../utils/adsorption-line";
+import { Selection } from "../utils/services/selection";
+import { AdsorptionLine } from "../utils/services/adsorption-line";
+import { MeshTransform } from "../utils/services/mesh-transform";
+
 import { handleSelectionCollectMesh } from "../utils/handles/selection-collect-mesh";
 import { handleHoverMesh } from "../utils/handles/hover-mesh";
 import {
@@ -11,7 +13,6 @@ import {
     handleDragMeshXScale,
     handleDragMeshYScale
 } from "../utils/handles/drag-mesh-scale";
-import { handleDragMeshTransform } from "../utils/handles/drag-mesh-transform";
 
 export const mouseHoverPlugin = {
     install(renderer) {
@@ -36,15 +37,14 @@ export const mouseHoverPlugin = {
             dragScaleXMeshes = [];
             dragScaleYMeshes = [];
         }
-        clear();
 
+        clear();
         const selection = new Selection({ width, height, $parent });
         const adsorptionLine = new AdsorptionLine({ width, height, $parent });
+        const meshTransform = new MeshTransform();
 
         document.addEventListener("mousedown", (v) => {
             mousedown = true;
-            prevMousedownLeft = v.layerX;
-            prevMousedownTop = v.layerY;
             selection.ready(v.layerX, v.layerY);
             adsorptionLine.ready();
 
@@ -94,13 +94,13 @@ export const mouseHoverPlugin = {
                 }
                 // 拖拽mesh做移动
                 else if (dragTransformMeshes.length) {
-                    handleDragMeshTransform({
+                    meshTransform.handleDragMeshTransform({
                         mouse: v,
                         meshes: dragTransformMeshes,
                         prevMousedownLeft,
                         prevMousedownTop,
                         onTransform(mesh) {
-                            // 渲染吸附线
+                            // 更新吸附线
                             const { x, y, xType, yType } =
                                 adsorptionLine.update({
                                     originMesh: mesh,
@@ -143,6 +143,8 @@ export const mouseHoverPlugin = {
 
         document.addEventListener("mouseup", () => {
             clear();
+            meshTransform.clear();
+
             selection.hide();
             adsorptionLine.hide();
         });

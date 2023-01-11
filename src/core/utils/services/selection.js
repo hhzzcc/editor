@@ -1,7 +1,7 @@
-import { Renderer } from "../../core/renderer";
-import { Camera } from "../../core/camera";
-import { Scene } from "../../core/scene";
-import { Mesh } from "../../core/mesh";
+import { Renderer } from "../../../core/renderer";
+import { Camera } from "../../../core/camera";
+import { Scene } from "../../../core/scene";
+import { Mesh } from "../../../core/mesh";
 
 // 框选盒
 export class Selection {

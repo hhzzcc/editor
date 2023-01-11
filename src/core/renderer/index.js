@@ -26,14 +26,20 @@ export class Renderer {
     }
 
     clear() {
-        const { scene } = this;
-        const { width, height } = scene;
-        this.ctx.clearRect(0, 0, width, height);
+        const { scene, ctx } = this;
+        const { width, height, backgroundColor } = scene;
+
+        if (backgroundColor) {
+            ctx.fillStyle = backgroundColor;
+            ctx.fillRect(0, 0, width, height);
+        } else {
+            ctx.clearRect(0, 0, width, height);
+        }
     }
 
     render() {
         const { scene, ctx } = this;
-        const { width, height, meshes } = scene;
+        const { meshes, width, height } = scene;
 
         this.clear();
         for (let i = 0; i < meshes.length; i++) {
