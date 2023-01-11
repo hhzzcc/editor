@@ -1,7 +1,7 @@
 import { isMouseCollectMesh } from "../collection";
 
 export function handleStartDragMesh(mouse, meshes) {
-    const startDragMeshes = [];
+    let startDragMesh = null;
     for (let i = 0; i < meshes.length; i++) {
         const mesh = meshes[i];
         const {
@@ -10,48 +10,45 @@ export function handleStartDragMesh(mouse, meshes) {
             isCollectBorderRect
         } = isMouseCollectMesh(mouse, mesh);
 
+        mesh.unHover();
+        mesh.blur();
+
         if (
-            isCollectContent ||
-            isCollectBorderCircular ||
-            isCollectBorderRect
+            !startDragMesh &&
+            (isCollectContent || isCollectBorderCircular || isCollectBorderRect)
         ) {
-            mesh.hover();
-            mesh.focus();
-            startDragMeshes.push(mesh);
-        } else {
-            mesh.unHover();
-            mesh.blur();
+            startDragMesh = mesh;
         }
     }
-    return startDragMeshes;
+
+    startDragMesh?.hover();
+    startDragMesh?.focus();
+    return startDragMesh;
 }
 
 export function handleDragMesh({
     mouse,
-    meshes,
+    mesh,
     onDragMeshMove,
     onDragMeshScale,
     onDragMeshScaleX,
     onDragMeshScaleY
 }) {
-    for (let i = 0; i < meshes.length; i++) {
-        const mesh = meshes[i];
-        const {
-            isCollectBorderCircular,
-            isCollectTopBorderRect,
-            isCollectRightBorderRect,
-            isCollectBottomBorderRect,
-            isCollectLeftBorderRect
-        } = isMouseCollectMesh(mouse, mesh);
+    const {
+        isCollectBorderCircular,
+        isCollectTopBorderRect,
+        isCollectRightBorderRect,
+        isCollectBottomBorderRect,
+        isCollectLeftBorderRect
+    } = isMouseCollectMesh(mouse, mesh);
 
-        if (isCollectBorderCircular) {
-            onDragMeshScale(mesh);
-        } else if (isCollectLeftBorderRect || isCollectRightBorderRect) {
-            onDragMeshScaleX(mesh);
-        } else if (isCollectTopBorderRect || isCollectBottomBorderRect) {
-            onDragMeshScaleY(mesh);
-        } else {
-            onDragMeshMove(mesh);
-        }
+    if (isCollectBorderCircular) {
+        onDragMeshScale(mesh);
+    } else if (isCollectLeftBorderRect || isCollectRightBorderRect) {
+        onDragMeshScaleX(mesh);
+    } else if (isCollectTopBorderRect || isCollectBottomBorderRect) {
+        onDragMeshScaleY(mesh);
+    } else {
+        onDragMeshMove(mesh);
     }
 }

@@ -13,6 +13,7 @@ import {
     handleDragMeshXScale,
     handleDragMeshYScale
 } from "../utils/handles/drag-mesh-scale";
+import { handleMeshTop } from "../utils/handles/mesh-top";
 
 export const mouseHoverPlugin = {
     install(renderer) {
@@ -21,21 +22,21 @@ export const mouseHoverPlugin = {
         let mousedown,
             prevMousedownLeft,
             prevMousedownTop,
-            dragMeshes,
-            dragTransformMeshes,
-            dragScaleMeshes,
-            dragScaleXMeshes,
-            dragScaleYMeshes;
+            dragMesh,
+            dragTransformMesh,
+            dragScaleMesh,
+            dragScaleXMesh,
+            dragScaleYMesh;
 
         function clear() {
             mousedown = false;
             prevMousedownLeft = null;
             prevMousedownTop = null;
-            dragMeshes = [];
-            dragTransformMeshes = [];
-            dragScaleMeshes = [];
-            dragScaleXMeshes = [];
-            dragScaleYMeshes = [];
+            dragMesh = null;
+            dragTransformMesh = null;
+            dragScaleMesh = null;
+            dragScaleXMesh = null;
+            dragScaleYMesh = null;
         }
 
         clear();
@@ -49,12 +50,18 @@ export const mouseHoverPlugin = {
             adsorptionLine.ready();
 
             // 鼠标按下mesh
-            dragMeshes = handleStartDragMesh(v, meshes);
+            dragMesh = handleStartDragMesh(v, meshes);
+
+            // 置顶元素
+            if (dragMesh) {
+                handleMeshTop(meshes, dragMesh);
+            }
+
             renderer.render();
         });
 
         canvas.addEventListener("mousemove", (v) => {
-            if (!dragMeshes.length) {
+            if (!dragMesh) {
                 if (mousedown) {
                     // 框选选中的mesh
                     handleSelectionCollectMesh(selection, meshes);
@@ -67,9 +74,9 @@ export const mouseHoverPlugin = {
                 }
             } else {
                 // 拖拽mesh做xy轴缩放
-                if (dragScaleMeshes.length) {
+                if (dragScaleMesh) {
                     handleDragMeshScale(
-                        dragScaleMeshes,
+                        dragScaleMesh,
                         v.layerX,
                         v.layerY,
                         prevMousedownLeft,
@@ -77,7 +84,7 @@ export const mouseHoverPlugin = {
                     );
                 }
                 // 拖拽mesh做x轴缩放
-                else if (dragScaleXMeshes.length) {
+                else if (dragScaleXMesh) {
                     handleDragMeshXScale(
                         dragScaleXMeshes,
                         v.layerX,
@@ -85,18 +92,18 @@ export const mouseHoverPlugin = {
                     );
                 }
                 // 拖拽mesh做y轴缩放
-                else if (dragScaleYMeshes.length) {
+                else if (dragScaleYMesh) {
                     handleDragMeshYScale(
-                        dragScaleYMeshes,
+                        dragScaleYMesh,
                         v.layerY,
                         prevMousedownTop
                     );
                 }
                 // 拖拽mesh做移动
-                else if (dragTransformMeshes.length) {
+                else if (dragTransformMesh) {
                     meshTransform.handleDragMeshTransform({
                         mouse: v,
-                        meshes: dragTransformMeshes,
+                        mesh: dragTransformMesh,
                         prevMousedownLeft,
                         prevMousedownTop,
                         onTransform(mesh) {
@@ -119,18 +126,18 @@ export const mouseHoverPlugin = {
                     // 拖拽mesh
                     handleDragMesh({
                         mouse: v,
-                        meshes: dragMeshes,
+                        mesh: dragMesh,
                         onDragMeshMove() {
-                            dragTransformMeshes = dragMeshes;
+                            dragTransformMesh = dragMesh;
                         },
                         onDragMeshScale() {
-                            dragScaleMeshes = dragMeshes;
+                            dragScaleMesh = dragMesh;
                         },
                         onDragMeshScaleX() {
-                            dragScaleXMeshes = dragMeshes;
+                            dragScaleXMesh = dragMesh;
                         },
                         onDragMeshScaleY() {
-                            dragScaleYMeshes = dragMeshes;
+                            dragScaleYMesh = dragMesh;
                         }
                     });
                 }

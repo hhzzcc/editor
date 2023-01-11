@@ -1,5 +1,8 @@
 <template>
     <div class="home-view">
+        <div>
+            <button @click="handleAddMesh">添加素材</button>
+        </div>
         <div class="home-view__editor" ref="parent" />
     </div>
 </template>
@@ -15,9 +18,10 @@ import { onMounted, ref } from "vue";
 export default {
     name: "home-view",
     setup() {
-        const image = new Image();
         const parent = ref(null);
-
+        const image = new Image();
+        let scene, renderer;
+        let n = 0;
         onMounted(() => {
             image.src =
                 "https://st-gdx.dancf.com/gaodingx/4323/configs/system/20210728-095726-adc9.svg";
@@ -36,12 +40,13 @@ export default {
                     height: image.height
                 });
                 const camera = new Camera();
-                const scene = new Scene({
+                scene = new Scene({
                     width: 400,
                     height: 600,
                     backgroundColor: "white"
                 });
-                const renderer = new Renderer({
+
+                renderer = new Renderer({
                     plugins: [...mousePlugins],
                     scene,
                     camera,
@@ -54,8 +59,24 @@ export default {
                 renderer.render();
             };
         });
+
+        function handleAddMesh() {
+            const mesh = new Mesh({
+                x: 50 + n,
+                y: 50 + n,
+                backgroundImage: image,
+                width: image.width,
+                height: image.height
+            });
+            scene.add(mesh);
+            n += 2;
+
+            renderer.render();
+        }
+
         return {
-            parent
+            parent,
+            handleAddMesh
         };
     }
 };

@@ -243,8 +243,13 @@ export class AdsorptionLine {
                 targetRightY
             });
 
-            xType = resultX.xType;
-            yType = resultY.yType;
+            if (resultX.xType) {
+                xType = resultX.xType;
+            }
+
+            if (resultY.yType) {
+                yType = resultY.yType;
+            }
         }
 
         this.renderer.render();
