@@ -1,7 +1,7 @@
 <template>
     <div class="home-view">
         <div>
-            <button @click="handleAddMesh">添加素材</button>
+            <!-- <button @click="handleAddMesh">添加素材</button> -->
         </div>
         <div class="home-view__editor" ref="parent" />
     </div>
