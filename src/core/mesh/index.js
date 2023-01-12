@@ -29,7 +29,7 @@ export class Mesh {
             borderColor = "#6ccfff",
             borderRectWidth = 16,
             borderRectHeight = 6,
-            ableScale = true
+            operable = true
         } = options;
 
         this.position = {
@@ -53,7 +53,7 @@ export class Mesh {
         this.type = {
             focus: false,
             hover: false,
-            ableScale
+            operable
         };
     }
 
@@ -131,9 +131,17 @@ export class Mesh {
         this.type.focus = false;
     }
 
+    operable() {
+        this.type.operable = true;
+    }
+
+    inoperable() {
+        this.type.operable = false;
+    }
+
     renderBorder({ ctx }) {
         const { type, style, position } = this;
-        const { focus, hover, ableScale } = type;
+        const { focus, hover, operable } = type;
         if (!focus && !hover) return;
 
         const { x, y } = position;
@@ -159,7 +167,7 @@ export class Mesh {
         ctx.stroke();
         ctx.closePath();
 
-        if (!focus || !ableScale) return;
+        if (!focus || !operable) return;
 
         const centerX = x + width / 2;
         const centerY = y + height / 2;

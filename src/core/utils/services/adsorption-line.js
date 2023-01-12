@@ -16,7 +16,7 @@ export class AdsorptionLine {
             radius: null,
             borderWidth: 0.5,
             borderColor: "#F56C6C",
-            ableScale: false
+            operable: false
         });
         const meshY = new Mesh({
             y: 0,
@@ -28,7 +28,7 @@ export class AdsorptionLine {
             radius: null,
             borderWidth: 0.5,
             borderColor: "#F56C6C",
-            ableScale: false
+            operable: false
         });
         const camera = new Camera();
         const scene = new Scene({ width, height });

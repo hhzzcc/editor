@@ -2,7 +2,10 @@ import { Selection } from "../utils/services/selection";
 import { AdsorptionLine } from "../utils/services/adsorption-line";
 import { MeshTransform } from "../utils/services/mesh-transform";
 
-import { handleSelectionCollectMesh } from "../utils/handles/selection-collect-mesh";
+import {
+    handleSelectionCollectMesh,
+    handleSelectionGroup
+} from "../utils/handles/selection-collect-mesh";
 import { handleHoverMesh } from "../utils/handles/hover-mesh";
 import {
     handleStartDragMesh,
@@ -18,7 +21,7 @@ import { handleMeshTop } from "../utils/handles/mesh-top";
 export const mouseHoverPlugin = {
     install(renderer) {
         const { scene, canvas, $parent } = renderer;
-        const { meshes, width, height } = scene;
+        const { meshes: sceneMeshes, width, height } = scene;
         let mousedown,
             prevMousedownLeft,
             prevMousedownTop,
@@ -50,11 +53,11 @@ export const mouseHoverPlugin = {
             adsorptionLine.ready();
 
             // 鼠标按下mesh
-            dragMesh = handleStartDragMesh(v, meshes);
+            dragMesh = handleStartDragMesh(v, sceneMeshes);
 
             // 置顶元素
             if (dragMesh) {
-                handleMeshTop(meshes, dragMesh);
+                handleMeshTop(sceneMeshes, dragMesh);
             }
 
             renderer.render();
@@ -64,13 +67,16 @@ export const mouseHoverPlugin = {
             if (!dragMesh) {
                 if (mousedown) {
                     // 框选选中的mesh
-                    handleSelectionCollectMesh(selection, meshes);
+                    const collectMeshes = handleSelectionCollectMesh(
+                        selection,
+                        sceneMeshes
+                    );
 
                     // 更新框选层的样式
-                    selection.update(v.layerX, v.layerY);
+                    selection.update(v.layerX, v.layerY, collectMeshes);
                 } else {
                     // 鼠标选中的mesh
-                    handleHoverMesh(v, meshes);
+                    handleHoverMesh(v, sceneMeshes);
                 }
             } else {
                 // 拖拽mesh做xy轴缩放
@@ -111,7 +117,7 @@ export const mouseHoverPlugin = {
                             const { x, y, xType, yType } =
                                 adsorptionLine.update({
                                     originMesh: mesh,
-                                    targetMeshes: meshes
+                                    targetMeshes: sceneMeshes
                                 });
 
                             return {
@@ -151,9 +157,20 @@ export const mouseHoverPlugin = {
         document.addEventListener("mouseup", () => {
             clear();
             meshTransform.clear();
-
             selection.hide();
             adsorptionLine.hide();
+
+            const { collectMeshes } = selection;
+            if (collectMeshes.length > 1) {
+                const group = handleSelectionGroup({
+                    collectMeshes,
+                    scene
+                });
+
+                group.focus();
+                scene.add(group);
+                renderer.render();
+            }
         });
     }
 };

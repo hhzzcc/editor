@@ -2,6 +2,7 @@ import { Renderer } from "../../../core/renderer";
 import { Camera } from "../../../core/camera";
 import { Scene } from "../../../core/scene";
 import { Mesh } from "../../../core/mesh";
+import { Group } from "../../../core/group";
 
 // 框选盒
 export class Selection {
@@ -13,7 +14,7 @@ export class Selection {
             minHeight: 0,
             radius: null,
             borderWidth: 1,
-            ableScale: false
+            operable: false
         });
         const camera = new Camera();
         const scene = new Scene({ width, height });
@@ -31,10 +32,12 @@ export class Selection {
         renderer.canvas.style.pointerEvents = "none";
 
         this.mesh = mesh;
+        this.collectMeshes = [];
         this.renderer = renderer;
     }
 
     ready(mousedownLeft, mousedownTop) {
+        this.collectMeshes = [];
         if (this.renderer) {
             this.mousedownLeft = mousedownLeft;
             this.mousedownTop = mousedownTop;
@@ -43,7 +46,7 @@ export class Selection {
         }
     }
 
-    update(layerX, layerY) {
+    update(layerX, layerY, collectMeshes) {
         const w = layerX - this.mousedownLeft;
         const h = layerY - this.mousedownTop;
 
@@ -60,6 +63,8 @@ export class Selection {
         } else {
             this.mesh.setHeight(h);
         }
+
+        this.collectMeshes = collectMeshes;
         this.renderer.render();
     }
 

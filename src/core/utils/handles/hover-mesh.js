@@ -12,5 +12,12 @@ export function handleHoverMesh(mouse, meshes) {
         }
     }
 
-    hoverMesh?.hover();
+    if (hoverMesh) {
+        // 判断当前是否在组内
+        if (!hoverMesh.parent) {
+            hoverMesh.operable();
+        }
+
+        hoverMesh.hover();
+    }
 }

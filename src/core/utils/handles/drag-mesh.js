@@ -21,8 +21,15 @@ export function handleStartDragMesh(mouse, meshes) {
         }
     }
 
-    startDragMesh?.hover();
-    startDragMesh?.focus();
+    if (startDragMesh) {
+        // 判断当前是否在组内
+        if (!startDragMesh.parent) {
+            startDragMesh.operable();
+        }
+        startDragMesh.hover();
+        startDragMesh.focus();
+    }
+
     return startDragMesh;
 }
 

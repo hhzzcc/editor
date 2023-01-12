@@ -40,7 +40,7 @@ export function isMouseCollectMesh(mouse, mesh) {
         originY > topY &&
         originY < bottomY;
 
-    if (mesh.type.focus && mesh.type.ableScale) {
+    if (mesh.type.focus && mesh.type.operable) {
         const { x: centerX, y: centerY } = mesh.getCenterPosition();
         const { borderRectWidth, borderRectHeight, radius } = mesh.style;
 
