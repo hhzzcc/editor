@@ -22,7 +22,7 @@ export class Mesh {
             width = 100,
             height = 100,
             minWidth = 30,
-            minHeight = 30,
+            minHeight = 20,
             backgroundImage = null,
             radius = 6,
             borderWidth = 2,
@@ -71,12 +71,22 @@ export class Mesh {
         };
     }
 
+    setPosition(x, y) {
+        this.setX(x);
+        this.setY(y);
+    }
+
     setX(x) {
         this.position.x = x;
     }
 
     setY(y) {
         this.position.y = y;
+    }
+
+    scale(x, y) {
+        this.scaleX(x);
+        this.scaleY(y);
     }
 
     scaleX(s) {

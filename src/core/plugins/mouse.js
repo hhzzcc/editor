@@ -4,7 +4,8 @@ import { MeshTransform } from "../utils/services/mesh-transform";
 
 import {
     handleSelectionCollectMesh,
-    handleSelectionGroup
+    handleCreateSelectionGroup,
+    handleUntieGroup
 } from "../utils/handles/selection-collect-mesh";
 import { handleHoverMesh } from "../utils/handles/hover-mesh";
 import {
@@ -58,6 +59,11 @@ export const mouseHoverPlugin = {
             // 置顶元素
             if (dragMesh) {
                 handleMeshTop(sceneMeshes, dragMesh);
+            }
+
+            // 解除临时组
+            if (sceneMeshes.length) {
+                handleUntieGroup({ sceneMeshes, scene, originMesh: dragMesh });
             }
 
             renderer.render();
@@ -161,16 +167,15 @@ export const mouseHoverPlugin = {
             adsorptionLine.hide();
 
             const { collectMeshes } = selection;
-            if (collectMeshes.length > 1) {
-                const group = handleSelectionGroup({
+            if (collectMeshes.length) {
+                const group = handleCreateSelectionGroup({
                     collectMeshes,
                     scene
                 });
-
-                group.focus();
                 scene.add(group);
-                renderer.render();
             }
+
+            renderer.render();
         });
     }
 };
