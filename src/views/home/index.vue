@@ -2,6 +2,8 @@
     <div class="home-view">
         <div>
             <button @click="handleAddMesh">添加素材</button>
+            <br />
+            <button @click="handleDownload">下载</button>
         </div>
         <div class="home-view__editor" ref="parent" />
     </div>
@@ -23,6 +25,7 @@ export default {
         let scene, renderer;
         let n = 10;
         onMounted(() => {
+            image.setAttribute("crossorigin", "anonymous");
             image.src =
                 "https://st-gdx.dancf.com/gaodingx/4323/configs/system/20210728-095726-adc9.svg";
             image.onload = () => {
@@ -74,9 +77,19 @@ export default {
             renderer.render();
         }
 
+        function handleDownload() {
+            const { canvas } = renderer;
+            const url = canvas.toDataURL("image/png", 1);
+            const a = document.createElement("a");
+            a.download = "下载";
+            a.href = url;
+            a.click();
+        }
+
         return {
             parent,
-            handleAddMesh
+            handleAddMesh,
+            handleDownload
         };
     }
 };
