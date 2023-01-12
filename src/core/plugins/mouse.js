@@ -86,7 +86,7 @@ export const mouseHoverPlugin = {
                 // 拖拽mesh做x轴缩放
                 else if (dragScaleXMesh) {
                     handleDragMeshXScale(
-                        dragScaleXMeshes,
+                        dragScaleXMesh,
                         v.layerX,
                         prevMousedownLeft
                     );

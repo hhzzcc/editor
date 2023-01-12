@@ -1,4 +1,4 @@
-import { ADSORPTION_DISTANCE } from "../constants";
+import { BREAK_ADSORPTION_DISTANCE } from "../constants";
 
 function getTransformX({ type, targetMeshX, originMeshX, originMeshWidth }) {
     switch (type) {
@@ -44,8 +44,11 @@ export class MeshTransform {
         const distanceX = this.offsetX - mouse.layerX;
         const distanceY = this.offsetY - mouse.layerY;
 
-        // 拖拽累计距离大于 ADSORPTION_DISTANCE 脱离吸附
-        if (this.offsetX !== 0 && Math.abs(distanceX) > ADSORPTION_DISTANCE) {
+        // 拖拽累计距离大于 BREAK_ADSORPTION_DISTANCE 脱离吸附
+        if (
+            this.offsetX !== 0 &&
+            Math.abs(distanceX) > BREAK_ADSORPTION_DISTANCE
+        ) {
             mesh.transformX(-distanceX);
             this.offsetX = 0;
         }
@@ -70,7 +73,10 @@ export class MeshTransform {
         }
 
         // 拖拽累计距离大于 ADSORPTION_DISTANCE 脱离吸附
-        if (this.offsetY !== 0 && Math.abs(distanceY) > ADSORPTION_DISTANCE) {
+        if (
+            this.offsetY !== 0 &&
+            Math.abs(distanceY) > BREAK_ADSORPTION_DISTANCE
+        ) {
             mesh.transformY(-distanceY);
             this.offsetY = 0;
         }

@@ -1,7 +1,7 @@
 <template>
     <div class="home-view">
         <div>
-            <!-- <button @click="handleAddMesh">添加素材</button> -->
+            <button @click="handleAddMesh">添加素材</button>
         </div>
         <div class="home-view__editor" ref="parent" />
     </div>
@@ -21,7 +21,7 @@ export default {
         const parent = ref(null);
         const image = new Image();
         let scene, renderer;
-        let n = 0;
+        let n = 10;
         onMounted(() => {
             image.src =
                 "https://st-gdx.dancf.com/gaodingx/4323/configs/system/20210728-095726-adc9.svg";
@@ -69,7 +69,7 @@ export default {
                 height: image.height
             });
             scene.add(mesh);
-            n += 2;
+            n += 10;
 
             renderer.render();
         }
