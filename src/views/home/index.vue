@@ -1,11 +1,23 @@
 <template>
     <div class="home-view">
-        <div>
-            <button @click="handleAddMesh">添加素材</button>
-            <br />
+        <div class="home-view__header">
+            <img
+                class="home-view__logo"
+                src="https://st0.dancf.com/static/02/202301130825-f513.png"
+            />
             <button @click="handleDownload">下载</button>
         </div>
-        <div class="home-view__editor" ref="parent" />
+        <div class="home-view__body">
+            <div class="home-view__left">
+                <button @click="handleAddMesh">添加素材</button>
+            </div>
+
+            <div class="home-view__content">
+                <div class="home-view__editor" ref="parent" />
+            </div>
+
+            <div class="home-view__right"></div>
+        </div>
     </div>
 </template>
 
@@ -97,14 +109,56 @@ export default {
 
 <style lang="less">
 .home-view {
-    display: flex;
-    justify-content: center;
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 54px;
+        background-color: #fff;
+        border-bottom: 2px solid #eef2f8;
+        padding: 0 24px;
+    }
+
+    &__logo {
+        height: 30px;
+    }
+
+    &__body {
+        display: flex;
+        height: calc(100vh - 54px);
+    }
+
+    &__content {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #f1f2f4;
+        height: 100%;
+    }
+
+    &__left {
+        width: 200px;
+        height: 100%;
+        background: #fff;
+        border-right: 2px solid #eef2f8;
+        padding: 24px;
+    }
+
+    &__right {
+        width: 276px;
+        height: 100%;
+        background: #fff;
+        border-left: 2px solid #eef2f8;
+        padding: 24px;
+    }
 
     &__editor {
+        width: 400px;
+        height: 600px;
         position: relative;
         border: 1px solid #eee;
         box-shadow: 1px 1px 15px rgb(0 0 0 / 20%);
-        margin-top: 50px;
 
         :first-child {
             background-color: #fff;
