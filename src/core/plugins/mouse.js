@@ -22,7 +22,8 @@ import { handleMeshTop } from "../utils/handles/mesh-top";
 export const mouseHoverPlugin = {
     install(renderer) {
         const { scene, canvas, $parent } = renderer;
-        const { meshes: sceneMeshes, width, height } = scene;
+        const { meshes: sceneMeshes } = scene;
+        const { width, height } = scene.style;
         let mousedown,
             prevMousedownLeft,
             prevMousedownTop,
@@ -123,7 +124,7 @@ export const mouseHoverPlugin = {
                             const { x, y, xType, yType } =
                                 adsorptionLine.update({
                                     originMesh: mesh,
-                                    targetMeshes: sceneMeshes
+                                    targets: sceneMeshes.concat(scene)
                                 });
 
                             return {

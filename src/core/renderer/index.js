@@ -7,8 +7,8 @@ export class Renderer {
             $parent = document.body
         } = options;
         this.canvas = document.createElement("canvas");
-        this.canvas.width = scene.width;
-        this.canvas.height = scene.height;
+        this.canvas.width = scene.style.width;
+        this.canvas.height = scene.style.height;
         this.ctx = this.canvas.getContext("2d");
         this.$parent = $parent;
         this.plugins = plugins;
@@ -27,7 +27,7 @@ export class Renderer {
 
     clear() {
         const { scene, ctx } = this;
-        const { width, height, backgroundColor } = scene;
+        const { width, height, backgroundColor } = scene.style;
 
         if (backgroundColor) {
             ctx.fillStyle = backgroundColor;
@@ -39,7 +39,7 @@ export class Renderer {
 
     render() {
         const { scene, ctx } = this;
-        const { meshes, width, height } = scene;
+        const { meshes } = scene;
 
         this.clear();
         for (let i = 0; i < meshes.length; i++) {

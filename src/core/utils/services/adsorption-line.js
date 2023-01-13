@@ -196,15 +196,15 @@ export class AdsorptionLine {
         return { yType };
     }
 
-    update({ originMesh, targetMeshes }) {
+    update({ originMesh, targets }) {
         this.meshX.blur();
         this.meshY.blur();
         let xType = null;
         let yType = null;
 
-        for (let i = 0; i < targetMeshes.length; i++) {
-            const targetMesh = targetMeshes[i];
-            if (targetMesh === originMesh) continue;
+        for (let i = 0; i < targets.length; i++) {
+            const target = targets[i];
+            if (target === originMesh) continue;
 
             const { x: originX, y: originY } = originMesh.position;
             const { x: originCenterX, y: originCenterY } =
@@ -212,12 +212,12 @@ export class AdsorptionLine {
             const { x: originRightX, y: originRightY } =
                 originMesh.getRightPosition();
 
-            const { x: targetX, y: targetY } = targetMesh.position;
+            const { x: targetX, y: targetY } = target.position;
             const { x: targetCenterX, y: targetCenterY } =
-                targetMesh.getCenterPosition();
+                target.getCenterPosition();
 
             const { x: targetRightX, y: targetRightY } =
-                targetMesh.getRightPosition();
+                target.getRightPosition();
 
             const resultX = this.updateAdsorptionX({
                 meshY: this.meshY,
