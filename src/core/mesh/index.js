@@ -107,6 +107,10 @@ export class Mesh {
             height < this.style.minHeight ? this.style.minHeight : height;
     }
 
+    setBackgroundImage(backgroundImage) {
+        this.style.backgroundImage = backgroundImage;
+    }
+
     transform(x, y) {
         this.transformX(x);
         this.transformY(y);

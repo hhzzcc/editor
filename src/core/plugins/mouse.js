@@ -18,6 +18,10 @@ import {
     handleDragMeshYScale
 } from "../utils/handles/drag-mesh-scale";
 import { handleMeshTop } from "../utils/handles/mesh-top";
+import {
+    handleDbClickMesh,
+    handleReplaceMeshBackgroundImage
+} from "../utils/handles/dbclick-mesh";
 
 export const mouseHoverPlugin = {
     install(renderer) {
@@ -159,6 +163,30 @@ export const mouseHoverPlugin = {
             prevMousedownLeft = v.layerX;
             prevMousedownTop = v.layerY;
             renderer.render();
+        });
+
+        document.addEventListener("dblclick", (v) => {
+            const dbClickMesh = handleDbClickMesh(v, sceneMeshes);
+            if (dbClickMesh) {
+                // 双击替换图片
+                handleReplaceMeshBackgroundImage(dbClickMesh).then(() =>
+                    renderer.render()
+                );
+            }
+        });
+
+        document.addEventListener("keydown", (v) => {
+            // 删除
+            if (v.code === "Backspace") {
+                for (let i = 0; i < sceneMeshes.length; i++) {
+                    const sceneMesh = sceneMeshes[i];
+                    if (sceneMesh.type.focus) {
+                        sceneMeshes.splice(i, 1);
+                        break;
+                    }
+                }
+                renderer.render();
+            }
         });
 
         document.addEventListener("mouseup", () => {

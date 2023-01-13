@@ -6,5 +6,5 @@ export function handleMeshTop(meshes, topMesh) {
             break;
         }
     }
-    meshes.unshift(topMesh);
+    meshes.push(topMesh);
 }
