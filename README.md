@@ -1,6 +1,6 @@
 <p align="center"><img width="100" src="https://st0.dancf.com/static/02/202301130825-f513.png" alt="Editor logo"></p>
 
-## introduction
+## Introduction
 
 使用 canvas 手撸一个编辑器，持续更新中 🔥
 
@@ -21,19 +21,19 @@
 -   [x] 添加元素
 -   [x] 下载
 
-## install
+## Install
 
 ```shell
 yarn install
 ```
 
-### run
+### Run
 
 ```shell
 yarn serve
 ```
 
-### build
+### Build
 
 ```shell
 yarn build
