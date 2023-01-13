@@ -4,6 +4,10 @@
 
 使用 canvas 手撸一个编辑器，持续更新中 🔥
 
+## Preview
+
+编辑器[在线预览](https://hhzzcc.github.io/editor/dist/index.html#/)
+
 ## Features
 
 -   [x] 元素拖拽
