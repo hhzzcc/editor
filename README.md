@@ -21,20 +21,16 @@
 -   [x] 添加元素
 -   [x] 下载
 
-## Install
+## Run
 
 ```shell
+
+// 依赖安装
 yarn install
-```
 
-### Run
-
-```shell
+// 本地运行
 yarn serve
-```
 
-### Build
-
-```shell
+// 构建
 yarn build
 ```
