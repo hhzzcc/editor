@@ -1,72 +1,36 @@
-export function handleDragMeshScale(
-    mesh,
-    layerX,
-    layerY,
-    prevLayerX,
-    prevLayerY
-) {
-    const { x: centerX, y: centerY } = mesh.getCenterPosition();
-    const movementX = layerX - prevLayerX;
-    const movementY = layerY - prevLayerY;
-
-    // 左上
-    if (layerX < centerX && layerY < centerY) {
-        mesh.setX(layerX);
-        mesh.setY(layerY);
-        mesh.setWidth(mesh.style.width - movementX);
-        mesh.setHeight(mesh.style.height - movementY);
-    }
-    // 右上
-    else if (layerX > centerX && layerY < centerY) {
-        mesh.setX(layerX - mesh.style.width);
-        mesh.setY(layerY);
-        mesh.setWidth(mesh.style.width + movementX);
-        mesh.setHeight(mesh.style.height - movementY);
-    }
-    // 左下
-    else if (layerX < centerX && layerY > centerY) {
-        mesh.setX(layerX);
-        mesh.setY(layerY - mesh.style.height);
-        mesh.setWidth(mesh.style.width - movementX);
-        mesh.setHeight(mesh.style.height + movementY);
-    }
-    // 右下
-    else if (layerX > centerX && layerY > centerY) {
-        mesh.setX(layerX - mesh.style.width);
-        mesh.setY(layerY - mesh.style.height);
-        mesh.setWidth(mesh.style.width + movementX);
-        mesh.setHeight(mesh.style.height + movementY);
-    }
-}
-
-export function handleDragMeshXScale(mesh, layerX, prevLayerX) {
+export function handleDragMeshXScale(mesh, mouse) {
     const { x: centerX } = mesh.getCenterPosition();
-    const movementX = layerX - prevLayerX;
+    const width = mesh.state.width;
+    const { movementX, x } = mouse;
 
     // 左
-    if (layerX < centerX) {
-        mesh.setX(layerX);
-        mesh.setWidth(mesh.style.width - movementX);
+    if (x < centerX) {
+        mesh.setX(x);
+        mesh.setWidth(width - movementX);
     }
     // 右
-    else if (layerX > centerX) {
-        mesh.setX(layerX - mesh.style.width);
-        mesh.setWidth(mesh.style.width + movementX);
+    else if (x > centerX) {
+        mesh.setWidth(width + movementX);
     }
 }
 
-export function handleDragMeshYScale(mesh, layerY, prevLayerY) {
+export function handleDragMeshYScale(mesh, mouse) {
     const { y: centerY } = mesh.getCenterPosition();
-    const movementY = layerY - prevLayerY;
+    const height = mesh.state.height;
+    const { movementY, y } = mouse;
 
     // 上
-    if (layerY < centerY) {
-        mesh.setY(layerY);
-        mesh.setHeight(mesh.style.height - movementY);
+    if (y < centerY) {
+        mesh.setY(y);
+        mesh.setHeight(height - movementY);
     }
     // 下
-    else if (layerY > centerY) {
-        mesh.setY(layerY - mesh.style.height);
-        mesh.setHeight(mesh.style.height + movementY);
+    else if (y > centerY) {
+        mesh.setHeight(height + movementY);
     }
+}
+
+export function handleDragMeshScale(mesh, mouse) {
+    handleDragMeshXScale(mesh, mouse);
+    handleDragMeshYScale(mesh, mouse);
 }

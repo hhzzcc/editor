@@ -1,78 +1,91 @@
-import { Renderer } from "../../../core/renderer";
-import { Camera } from "../../../core/camera";
-import { Scene } from "../../../core/scene";
-import { Mesh } from "../../../core/mesh";
+import { isRectCollectRect } from "../collection";
 
 // 框选盒
 export class Selection {
     constructor({ width, height, $parent }) {
-        const mesh = new Mesh({
-            width: 0,
-            height: 0,
-            minWidth: 0,
-            minHeight: 0,
-            radius: null,
-            borderWidth: 1,
-            operable: false
-        });
-        const camera = new Camera();
-        const scene = new Scene({ width, height });
-        const renderer = new Renderer({
-            scene,
-            camera,
-            $parent
-        });
-        mesh.focus();
-        scene.add(mesh);
-        renderer.canvas.style.position = "absolute";
-        renderer.canvas.style.top = "0";
-        renderer.canvas.style.left = "0";
-        renderer.canvas.style.zIndex = "1";
-        renderer.canvas.style.pointerEvents = "none";
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        canvas.style.position = "absolute";
+        canvas.style.top = "0";
+        canvas.style.left = "0";
+        canvas.style.pointerEvents = "none";
+        $parent.appendChild(canvas);
 
-        this.mesh = mesh;
-        this.collectMeshes = [];
-        this.renderer = renderer;
+        this.canvas = canvas;
+        this.ctx = canvas.getContext("2d");
     }
 
-    ready(mousedownLeft, mousedownTop) {
-        this.collectMeshes = [];
-        if (this.renderer) {
-            this.mousedownLeft = mousedownLeft;
-            this.mousedownTop = mousedownTop;
-            this.mesh.move(mousedownLeft, mousedownTop);
-            this.renderer.canvas.style.display = null;
-        }
+    ready({ originX, originY }) {
+        this.originX = originX;
+        this.originY = originY;
+        this.collectElements = [];
     }
 
-    update(layerX, layerY, collectMeshes) {
-        const w = layerX - this.mousedownLeft;
-        const h = layerY - this.mousedownTop;
+    update({ x, y, targetElements }) {
+        this.clear();
 
-        if (w < 0) {
-            this.mesh.setX(this.mousedownLeft + w);
-            this.mesh.setWidth(-w);
+        const { ctx, originX, originY } = this;
+        const distanceX = x - originX;
+        const distanceY = y - originY;
+        let rectX, rectY, rectW, rectH;
+
+        if (distanceX < 0) {
+            rectX = x;
+            rectW = -distanceX;
         } else {
-            this.mesh.setWidth(w);
+            rectX = originX;
+            rectW = distanceX;
         }
 
-        if (h < 0) {
-            this.mesh.setY(this.mousedownTop + h);
-            this.mesh.setHeight(-h);
+        if (distanceY < 0) {
+            rectY = y;
+            rectH = -distanceY;
         } else {
-            this.mesh.setHeight(h);
+            rectY = originY;
+            rectH = distanceY;
         }
 
-        this.collectMeshes = collectMeshes;
-        this.renderer.render();
+        ctx.strokeStyle = "blue";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.strokeRect(rectX, rectY, rectW, rectH);
+        ctx.stroke();
+
+        const collectElements = [];
+        for (let i = 0; i < targetElements.length; i++) {
+            const targetElement = targetElements[i];
+            if (
+                isRectCollectRect({
+                    x1: targetElement.state.x,
+                    y1: targetElement.state.y,
+                    width1: targetElement.state.width,
+                    height1: targetElement.state.height,
+
+                    x2: rectX,
+                    y2: rectY,
+                    width2: rectW,
+                    height2: rectH
+                })
+            ) {
+                targetElement.inoperable();
+                targetElement.focus();
+                collectElements.push(targetElement);
+            } else {
+                targetElement.operable();
+                targetElement.blur();
+            }
+        }
+
+        this.collectElements = collectElements;
     }
 
-    hide() {
-        if (this.renderer) {
-            this.mesh.setWidth(0);
-            this.mesh.setHeight(0);
-            this.renderer.canvas.style.display = "none";
-            this.renderer && this.renderer.clear();
-        }
+    getCollectElements() {
+        return this.collectElements;
+    }
+
+    clear() {
+        const { ctx, canvas } = this;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
 }

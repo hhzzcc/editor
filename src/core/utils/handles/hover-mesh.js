@@ -1,10 +1,10 @@
 import { isMouseCollectMesh } from "../collection";
 
-export function handleHoverMesh(mouse, meshes) {
+export function handleHoverMesh(meshes, target) {
     let hoverMesh = null;
     for (let i = 0; i < meshes.length; i++) {
         const mesh = meshes[i];
-        const { isCollectContent } = isMouseCollectMesh(mouse, mesh);
+        const { isCollectContent } = isMouseCollectMesh(target, mesh);
 
         mesh.unHover();
         if (isCollectContent && !hoverMesh) {

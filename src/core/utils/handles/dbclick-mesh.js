@@ -1,13 +1,13 @@
 import { isMouseCollectMesh } from "../collection";
 
-export function handleDbClickMesh(mouse, meshes) {
+export function handleDbClickMesh(target, meshes) {
     for (let i = 0; i < meshes.length; i++) {
         const mesh = meshes[i];
         const {
             isCollectContent,
             isCollectBorderCircular,
             isCollectBorderRect
-        } = isMouseCollectMesh(mouse, mesh);
+        } = isMouseCollectMesh(target, mesh);
 
         if (
             isCollectContent ||

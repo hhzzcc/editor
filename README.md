@@ -2,7 +2,7 @@
 
 ## Description
 
-使用 canvas 手撸一个编辑器，持续更新中 🔥
+手撸一个编辑器，持续更新中 🔥
 
 ## Preview
 

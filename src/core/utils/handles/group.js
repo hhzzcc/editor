@@ -1,13 +1,12 @@
-export function handleGroupSize(meshes) {
+export function handleGroupSize(elements) {
     let top = null;
     let right = null;
     let bottom = null;
     let left = null;
 
-    for (let i = 0; i < meshes.length; i++) {
-        const mesh = meshes[i];
-        const { x, y } = mesh.position;
-        const { width, height } = mesh.style;
+    for (let i = 0; i < elements.length; i++) {
+        const element = elements[i];
+        const { x, y, width, height } = element.state;
 
         top = top === null ? y : Math.min(top, y);
         right = right === null ? x + width : Math.max(right, x + width);
@@ -21,26 +20,4 @@ export function handleGroupSize(meshes) {
         width: right - left,
         height: bottom - top
     };
-}
-
-export function handleGroupBackground({
-    groupX,
-    groupY,
-    groupWidth,
-    groupHeight,
-    sceneMeshes
-}) {
-    const canvas = document.createElement("canvas");
-    canvas.width = groupWidth;
-    canvas.height = groupHeight;
-    const ctx = canvas.getContext("2d");
-
-    for (let i = 0; i < sceneMeshes.length; i++) {
-        const sceneMesh = sceneMeshes[i];
-        const { x, y } = sceneMesh.position;
-        const { backgroundImage, width, height } = sceneMesh.style;
-        ctx.drawImage(backgroundImage, x - groupX, y - groupY, width, height);
-    }
-
-    return canvas;
 }

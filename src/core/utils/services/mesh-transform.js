@@ -31,45 +31,39 @@ export class MeshTransform {
         this.offsetY = 0;
     }
 
-    handleDragMeshTransform({
-        mouse,
-        mesh,
-        prevMousedownLeft,
-        prevMousedownTop,
-        onTransform
-    }) {
+    handleDragMeshTransform({ mouse, mesh, onTransform }) {
         const { x, y, xType, yType } = onTransform(mesh);
-        const transformDragX = mouse.layerX - prevMousedownLeft;
-        const transformDragY = mouse.layerY - prevMousedownTop;
-        const distanceX = this.offsetX - mouse.layerX;
-        const distanceY = this.offsetY - mouse.layerY;
+        const transformDragX = mouse.movementX;
+        const transformDragY = mouse.movementY;
+        const distanceX = mouse.x - this.offsetX;
+        const distanceY = mouse.y - this.offsetY;
 
         // 拖拽累计距离大于 BREAK_ADSORPTION_DISTANCE 脱离吸附
         if (
             this.offsetX !== 0 &&
             Math.abs(distanceX) > BREAK_ADSORPTION_DISTANCE
         ) {
-            mesh.transformX(-distanceX);
+            mesh.transformX(distanceX);
             this.offsetX = 0;
         }
         // 吸附
         else if (xType) {
-            // 记录吸附位置
-            if (this.offsetX === 0) {
-                this.offsetX = mouse.layerX;
-            }
             const transformAdsorptionX = getTransformX({
                 type: xType,
                 targetMeshX: x,
-                originMeshX: mesh.position.x,
-                originMeshWidth: mesh.style.width
+                originMeshX: mesh.state.x,
+                originMeshWidth: mesh.state.width
             });
             mesh.transformX(transformAdsorptionX);
+            // 记录吸附位置
+            if (this.offsetX === 0) {
+                this.offsetX = mouse.x;
+            }
         }
         // 自由拖拽
         else {
-            this.offsetX = 0;
             mesh.transformX(transformDragX);
+            this.offsetX = 0;
         }
 
         // 拖拽累计距离大于 ADSORPTION_DISTANCE 脱离吸附
@@ -77,27 +71,27 @@ export class MeshTransform {
             this.offsetY !== 0 &&
             Math.abs(distanceY) > BREAK_ADSORPTION_DISTANCE
         ) {
-            mesh.transformY(-distanceY);
+            mesh.transformY(distanceY);
             this.offsetY = 0;
         }
         // 吸附
         else if (yType) {
-            // 记录吸附位置
-            if (this.offsetY === 0) {
-                this.offsetY = mouse.layerY;
-            }
             const transformAdsorptionY = getTransformY({
                 type: yType,
                 targetMeshY: y,
-                originMeshY: mesh.position.y,
-                originMeshHeight: mesh.style.height
+                originMeshY: mesh.state.y,
+                originMeshHeight: mesh.state.height
             });
             mesh.transformY(transformAdsorptionY);
+            // 记录吸附位置
+            if (this.offsetY === 0) {
+                this.offsetY = mouse.y;
+            }
         }
         // 自由拖拽
         else {
-            this.offsetY = 0;
             mesh.transformY(transformDragY);
+            this.offsetY = 0;
         }
     }
 }
