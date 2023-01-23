@@ -9,6 +9,8 @@
         <div
             :class="bem('content')"
             @mousedown="(e) => $emit('drag-before', { type: 'content', e })"
+            @click="(e) => $emit('focus', { type: 'content', e })"
+            @dblclick="(e) => $emit('change-image', { type: 'content', e })"
         >
             <img :src="imgSrc" v-if="imgSrc" />
         </div>

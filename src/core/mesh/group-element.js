@@ -5,12 +5,14 @@ export class GroupElement extends Element {
     constructor({ children, ...options }) {
         super(options);
         this.elementType = "group";
-        this.state.children = children;
-        this.elementComponent = GroupElementComponent;
+        this.add(children);
     }
 
-    add(element) {
-        this.state.children.push(element);
+    add(elements) {
+        if (!this.state.children) {
+            this.state.children = [];
+        }
+        this.state.children.push(...elements);
     }
 
     temporary() {

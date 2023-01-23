@@ -1,10 +1,13 @@
 import { Element } from "./element";
-import ImageElementComponent from "../components/image-element.vue";
 
 export class ImageElement extends Element {
-    constructor(options) {
+    constructor({ imgSrc, ...options }) {
         super(options);
         this.elementType = "image";
-        this.elementComponent = ImageElementComponent;
+        this.setImgSrc(imgSrc);
+    }
+
+    setImgSrc(imgSrc) {
+        this.state.imgSrc = imgSrc;
     }
 }

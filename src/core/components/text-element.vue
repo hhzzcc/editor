@@ -9,37 +9,33 @@
         <div
             :class="bem('content')"
             @mousedown="(e) => $emit('drag-before', { type: 'content', e })"
-            @click="(e) => $emit('focus', { type: 'content', e })"
+            @click="handleClick"
         >
-            <template v-for="(element, i) in children" :key="i">
-                <ImageElement
-                    v-if="element.elementType === 'image'"
-                    v-bind="element.state"
-                />
-                <TextElement
-                    v-else-if="element.elementType === 'text'"
-                    v-bind="element.state"
-                />
-            </template>
+            <div
+                :class="bem('text')"
+                ref="input"
+                :contenteditable="true"
+                @input="(e) => $emit('change-text', e.target.textContent)"
+                v-show="edit"
+            >
+                {{ text }}
+            </div>
+            <div :class="bem('text')" v-show="!edit">{{ text }}</div>
         </div>
     </Border>
 </template>
 
 <script>
-import { defineComponent, computed } from "vue";
+import { defineComponent, computed, watch, ref, nextTick } from "vue";
 import { createNamespace } from "../utils/create-bem";
 import Border from "./border.vue";
-import ImageElement from "./image-element.vue";
-import TextElement from "./text-element.vue";
 
-const [name, bem] = createNamespace("group-element");
+const [name, bem] = createNamespace("text-element");
 
 export default defineComponent({
     name,
     components: {
-        Border,
-        ImageElement,
-        TextElement
+        Border
     },
     props: {
         width: {
@@ -62,6 +58,14 @@ export default defineComponent({
             type: Number,
             default: null
         },
+        text: {
+            type: String,
+            default: ""
+        },
+        edit: {
+            type: Boolean,
+            default: false
+        },
         hover: {
             type: Boolean,
             default: false
@@ -73,15 +77,12 @@ export default defineComponent({
         operable: {
             type: Boolean,
             default: true
-        },
-        children: {
-            type: Array,
-            default: () => []
         }
     },
-    setup(props) {
+    setup(props, { emit }) {
         const visibleBox = computed(() => props.hover || props.focus);
         const visibleBoxScale = computed(() => props.focus && props.operable);
+        const input = ref(null);
 
         const style = computed(() => {
             return {
@@ -92,9 +93,26 @@ export default defineComponent({
             };
         });
 
+        function handleClick(e) {
+            if (props.focus && !props.edit) {
+                emit("start-change-text", { type: "content", e });
+                nextTick(() => {
+                    input.value.focus();
+                    const range = document.createRange();
+                    range.selectNodeContents(input.value);
+                    window.getSelection().removeAllRanges();
+                    window.getSelection().addRange(range);
+                });
+            } else {
+                emit("focus", { type: "content", e });
+            }
+        }
+
         return {
             visibleBox,
             visibleBoxScale,
+            input,
+            handleClick,
 
             style,
             bem
@@ -104,7 +122,7 @@ export default defineComponent({
 </script>
 
 <style lang="less">
-.group-element {
+.text-element {
     position: absolute;
     left: 0;
     top: 0;
@@ -114,12 +132,20 @@ export default defineComponent({
         height: 100%;
     }
 
-    img {
+    &__text {
+        user-select: none;
+    }
+
+    &__text {
+        font-size: 14px;
+        display: block;
         width: 100%;
         height: 100%;
-        pointer-events: none;
-        user-select: none;
-        -webkit-user-drag: none;
+        border: none;
+        overflow-wrap: break-word;
+        padding: 0;
+        background: transparent;
+        outline: none;
     }
 }
 </style>

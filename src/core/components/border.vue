@@ -104,11 +104,6 @@ export default defineComponent({
 @BORDER_CIRCULAR_SIZE: 10px;
 @BORDER_CIRCULAR_RADIUS: 5px;
 .@{b} {
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
     &--visible-box {
         box-shadow: 0 0 0 @BORDER_WIDTH blue;
     }

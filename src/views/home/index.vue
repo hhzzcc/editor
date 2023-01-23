@@ -19,16 +19,32 @@
                             v-if="element.elementType === 'image'"
                             v-bind="element.state"
                             @drag-before="(v) => handleMousedown(v, element)"
-                            @mouseenter="(v) => handleMouseenter(v, element)"
-                            @mouseleave="(v) => handleMouseleave(v, element)"
+                            @change-Image="(v) => handleChangeImage(v, element)"
+                            @mouseenter="(v) => handleHover(v, element)"
+                            @mouseleave="(v) => handleUnHover(v, element)"
+                            @focus="(v) => handleFocus(v, element)"
+                        />
+
+                        <TextElementComponent
+                            v-else-if="element.elementType === 'text'"
+                            v-bind="element.state"
+                            @drag-before="(v) => handleMousedown(v, element)"
+                            @start-change-text="
+                                (v) => handleStartChangeText(v, element)
+                            "
+                            @change-text="(v) => handleChangeText(v, element)"
+                            @mouseenter="(v) => handleHover(v, element)"
+                            @mouseleave="(v) => handleUnHover(v, element)"
+                            @focus="(v) => handleFocus(v, element)"
                         />
 
                         <GroupElementComponent
                             v-else-if="element.elementType === 'group'"
                             v-bind="element.state"
                             @drag-before="(v) => handleMousedown(v, element)"
-                            @mouseenter="(v) => handleMouseenter(v, element)"
-                            @mouseleave="(v) => handleMouseleave(v, element)"
+                            @mouseenter="(v) => handleHover(v, element)"
+                            @mouseleave="(v) => handleUnHover(v, element)"
+                            @focus="(v) => handleFocus(v, element)"
                         />
                     </template>
                 </div>
@@ -42,11 +58,13 @@
 <script>
 import ImageElementComponent from "../../core/components/image-element.vue";
 import GroupElementComponent from "../../core/components/group-element.vue";
+import TextElementComponent from "../../core/components/text-element.vue";
 
 import { onMounted, ref, reactive } from "vue";
 import { AdsorptionLine } from "../../core/utils/services/adsorption-line";
 import { Selection } from "../../core/utils/services/selection";
 import { ImageElement } from "../../core/mesh/image-element";
+import { TextElement } from "../../core/mesh/text-element";
 import { GroupElement } from "../../core/mesh/group-element";
 
 import { MeshTransform } from "../../core/utils/services/mesh-transform";
@@ -56,12 +74,14 @@ import {
     handleDragMeshYScale
 } from "../../core/utils/handles/drag-mesh-scale";
 import { handleGroupSize } from "../../core/utils/handles/group";
+import { loadImage } from "../../core/utils/handles/dbclick-mesh";
 
 export default {
     name: "home-view",
     components: {
         ImageElementComponent,
-        GroupElementComponent
+        GroupElementComponent,
+        TextElementComponent
     },
     setup() {
         const elements = reactive([]);
@@ -84,6 +104,13 @@ export default {
                     height: 100,
                     x: 100,
                     y: 100
+                }),
+                new TextElement({
+                    text: "我是文字，，，a#￥！#%%……￥aaa hello aa的的",
+                    width: 200,
+                    height: 100,
+                    x: 100,
+                    y: 200
                 })
             );
 
@@ -102,43 +129,34 @@ export default {
 
         let mouseDownElement = null;
         let mouseDownData = null;
+        let textElement = null;
         let mousedown = false;
 
-        function handleMousedown(v, currentElement) {
+        function handleFocus(v, currentElement) {
             currentElement.focus();
+        }
 
+        function handleMousedown(v, currentElement) {
             mouseDownElement = currentElement;
             mouseDownData = v;
 
-            // 置顶
-            for (let i = 0; i < elements.length; i++) {
-                const element = elements[i];
-                if (element === currentElement) {
-                    element.setZIndex(1);
-                } else {
-                    element.setZIndex(null);
-                }
-            }
+            // // 置顶
+            // for (let i = 0; i < elements.length; i++) {
+            //     const element = elements[i];
+            //     if (element === currentElement) {
+            //         element.setZIndex(1);
+            //     } else {
+            //         element.setZIndex(null);
+            //     }
+            // }
         }
 
-        function handleMouseenter(_, currentElement) {
-            for (let i = 0; i < elements.length; i++) {
-                const element = elements[i];
-                if (element === currentElement) {
-                    element.hover();
-                    break;
-                }
-            }
+        function handleHover(_, currentElement) {
+            currentElement.hover();
         }
 
-        function handleMouseleave(_, currentElement) {
-            for (let i = 0; i < elements.length; i++) {
-                const element = elements[i];
-                if (element === currentElement) {
-                    element.unHover();
-                    break;
-                }
-            }
+        function handleUnHover(_, currentElement) {
+            currentElement.unHover();
         }
 
         let prevMousedownLeft = 0,
@@ -157,6 +175,13 @@ export default {
 
             for (let i = 0; i < elements.length; i++) {
                 const element = elements[i];
+
+                // 结束编辑
+                if (textElement && textElement !== mouseDownElement) {
+                    textElement.endEdit();
+                    textElement = null;
+                }
+
                 if (element !== mouseDownElement) {
                     element.blur();
 
@@ -270,6 +295,7 @@ export default {
             dragScaleElement = null;
             dragScaleXElement = null;
             dragScaleYElement = null;
+
             meshTransform.clear();
             selection.clear();
             adsorptionLine.clear();
@@ -309,6 +335,22 @@ export default {
             }
         });
 
+        async function handleChangeImage(_, currentElement) {
+            const { width, height, src } = await loadImage();
+            currentElement.setWidth(width);
+            currentElement.setHeight(height);
+            currentElement.setImgSrc(src);
+        }
+
+        function handleStartChangeText(_, currentElement) {
+            textElement = currentElement;
+            currentElement.startEdit();
+        }
+
+        function handleChangeText(value, currentElement) {
+            currentElement.setText(value);
+        }
+
         function handleAddMesh() {}
 
         function handleDownload() {}
@@ -316,9 +358,14 @@ export default {
         return {
             parent,
             elements,
+
+            handleChangeImage,
+            handleStartChangeText,
+            handleChangeText,
+            handleFocus,
             handleMousedown,
-            handleMouseenter,
-            handleMouseleave,
+            handleHover,
+            handleUnHover,
             handleAddMesh,
             handleDownload
         };
