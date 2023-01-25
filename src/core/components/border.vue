@@ -127,21 +127,25 @@ export default defineComponent({
         &--left-top {
             left: -@BORDER_CIRCULAR_RADIUS;
             top: -@BORDER_CIRCULAR_RADIUS;
+            cursor: nw-resize;
         }
 
         &--right-top {
             right: -@BORDER_CIRCULAR_RADIUS;
             top: -@BORDER_CIRCULAR_RADIUS;
+            cursor: ne-resize;
         }
 
         &--right-bottom {
             right: -@BORDER_CIRCULAR_RADIUS;
             bottom: -@BORDER_CIRCULAR_RADIUS;
+            cursor: se-resize;
         }
 
         &--left-bottom {
             left: -@BORDER_CIRCULAR_RADIUS;
             bottom: -@BORDER_CIRCULAR_RADIUS;
+            cursor: sw-resize;
         }
     }
 
@@ -158,6 +162,7 @@ export default defineComponent({
             left: 50%;
             transform: translateX(-50%);
             top: calc(-@BORDER_RECT_HEIGHT / 2);
+            cursor: n-resize;
         }
 
         &--right {
@@ -166,6 +171,7 @@ export default defineComponent({
             top: 50%;
             transform: translateY(-50%);
             right: calc(-@BORDER_RECT_HEIGHT / 2 - @BORDER_WIDTH / 2);
+            cursor: e-resize;
         }
 
         &--bottom {
@@ -174,6 +180,7 @@ export default defineComponent({
             left: 50%;
             transform: translateX(-50%);
             bottom: calc(-@BORDER_RECT_HEIGHT / 2);
+            cursor: s-resize;
         }
 
         &--left {
@@ -182,6 +189,7 @@ export default defineComponent({
             top: 50%;
             transform: translateY(-50%);
             left: calc(-@BORDER_RECT_HEIGHT / 2 - @BORDER_WIDTH / 2);
+            cursor: w-resize;
         }
     }
 }

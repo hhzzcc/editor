@@ -10,7 +10,6 @@ function getBase64(imgUrl) {
         window.URL = window.URL || window.webkitURL;
         const xhr = new XMLHttpRequest();
         xhr.open("get", imgUrl, true);
-        // 至关重要
         xhr.responseType = "blob";
         xhr.onload = function () {
             if (this.status == 200) {
@@ -34,7 +33,8 @@ export class ImageElement extends Element {
     }
 
     async setImgSrc(imgSrc) {
-        const base64 = await getBase64(imgSrc);
-        this.state.imgSrc = base64;
+        // const base64 = await getBase64(imgSrc);
+        // console.log(base64);
+        this.state.imgSrc = imgSrc;
     }
 }

@@ -112,6 +112,7 @@ export default defineComponent({
     &__content {
         width: 100%;
         height: 100%;
+        cursor: move;
     }
 
     img {

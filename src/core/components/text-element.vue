@@ -181,6 +181,7 @@ export default defineComponent({
     &__content {
         width: 100%;
         height: 100%;
+        cursor: move;
     }
 
     &__text,
@@ -197,6 +198,7 @@ export default defineComponent({
 
     &__input {
         opacity: 0;
+        cursor: text;
         &--visible {
             opacity: 1;
         }

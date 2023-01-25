@@ -84,7 +84,7 @@
                     </Select>
 
                     <Select
-                        :value="editElement.state.fontSize"
+                        :value="editElement.state.fontSize.toFixed(1)"
                         class="home-view__font-family"
                         @change="handleChangeFontSize"
                     >
@@ -128,7 +128,7 @@ import ImageElementComponent from "../../core/components/image-element.vue";
 import GroupElementComponent from "../../core/components/group-element.vue";
 import TextElementComponent from "../../core/components/text-element.vue";
 
-import { onMounted, ref, reactive, computed } from "vue";
+import { onMounted, ref, reactive, computed, nextTick } from "vue";
 import { Select, SelectOption, Input } from "ant-design-vue";
 import { AdsorptionLine } from "../../core/utils/services/adsorption-line";
 import { Selection } from "../../core/utils/services/selection";
@@ -453,6 +453,10 @@ export default {
         }
 
         function handleDownload() {
+            for (let i = 0; i < elements.length; i++) {
+                const element = elements[i];
+                element.blur();
+            }
             const width = parent.value.offsetWidth;
             const height = parent.value.offsetHeight;
 
@@ -476,31 +480,29 @@ export default {
                     dlLink.download,
                     dlLink.href
                 ].join(":");
+
                 dlLink.click();
             };
 
-            tempImg.onerror = (e) => {
-                console.log("error", e);
-            };
-
-            let styleSrc = "";
-            const $styles = document.querySelectorAll("style");
-            for (let i = 0; i < $styles.length - 1; i++) {
-                const $style = $styles[i];
-                styleSrc += $style.innerHTML;
-            }
-            tempImg.src =
-                `data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg"><foreignObject width="${
-                    width * 2
-                }" height="${
-                    height * 2
-                }"><body xmlns="http://www.w3.org/1999/xhtml">
+            nextTick(() => {
+                let styleSrc = "";
+                const $styles = document.querySelectorAll("style");
+                for (let i = 0; i < $styles.length - 1; i++) {
+                    const $style = $styles[i];
+                    styleSrc += $style.innerHTML;
+                }
+                tempImg.src =
+                    `data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg"><foreignObject width="${
+                        width * 2
+                    }" height="${
+                        height * 2
+                    }"><body xmlns="http://www.w3.org/1999/xhtml">
             ${new XMLSerializer().serializeToString(parent.value)}
             <style>${styleSrc}</style></body></foreignObject></svg>`
-                    .replace(/\n/g, "")
-                    .replace(/\t/g, "")
-                    .replace(/#/g, "%23");
-            console.log(tempImg.src);
+                        .replace(/\n/g, "")
+                        .replace(/\t/g, "")
+                        .replace(/#/g, "%23");
+            });
         }
 
         function handleChangeFontFamily(v) {
