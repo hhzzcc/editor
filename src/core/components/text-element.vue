@@ -16,11 +16,14 @@
                 :class="bem('input', { visible: edit })"
                 ref="input"
                 :contenteditable="true"
+                :style="textStyle"
                 @input="handleInput"
             >
                 {{ text }}
             </div>
-            <div :class="bem('text')" v-show="!edit">{{ text }}</div>
+            <div :class="bem('text')" :style="textStyle" v-show="!edit">
+                {{ text }}
+            </div>
         </div>
     </Border>
 </template>
@@ -67,7 +70,15 @@ export default defineComponent({
         },
         fontSize: {
             type: Number,
-            default: 14
+            default: null
+        },
+        fontColor: {
+            type: String,
+            default: null
+        },
+        fontFamily: {
+            type: String,
+            default: null
         },
         text: {
             type: String,
@@ -100,9 +111,16 @@ export default defineComponent({
                 width: props.width + "px",
                 height: props.height + "px",
                 transform: `translate(${props.x}px, ${props.y}px)`,
-                zIndex: props.zIndex,
+                zIndex: props.zIndex
+            };
+        });
+
+        const textStyle = computed(() => {
+            return {
                 fontSize: props.fontSize + "px",
-                lineHeight: props.fontSize + "px"
+                fontFamily: props.fontFamily,
+                lineHeight: props.fontSize + "px",
+                color: props.fontColor
             };
         });
 
@@ -147,6 +165,7 @@ export default defineComponent({
             handleInput,
 
             style,
+            textStyle,
             bem
         };
     }
