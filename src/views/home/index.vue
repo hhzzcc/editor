@@ -54,23 +54,37 @@
             </div>
 
             <div class="home-view__right">
-                <template v-if="focusElement">
+                <div
+                    class="home-view__font-bar"
+                    v-if="editElement && editElement.elementType === 'text'"
+                >
+                    <div>
+                        <Input :value="editElement.state.x.toFixed(2)">
+                            <template #addonBefore>X</template>
+                        </Input>
+                        <Input :value="editElement.state.y.toFixed(2)"
+                            ><template #addonBefore>Y</template>
+                        </Input>
+                    </div>
+
                     <Input
-                        :value="focusElement.state.text"
+                        :value="editElement.state.text"
                         @change="handleChangeFontText"
-                    />
+                        ><template #addonBefore>内容</template>
+                    </Input>
 
                     <Select
-                        :value="focusElement.state.fontFamily"
+                        :value="editElement.state.fontFamily"
                         class="home-view__font-family"
                         @change="handleChangeFontFamily"
                     >
+                        <template #addonBefore>X</template>
                         <SelectOption value="serif">serif</SelectOption>
                         <SelectOption value="fangsong">仿宋</SelectOption>
                     </Select>
 
                     <Select
-                        :value="focusElement.state.fontSize"
+                        :value="editElement.state.fontSize"
                         class="home-view__font-family"
                         @change="handleChangeFontSize"
                     >
@@ -80,10 +94,30 @@
 
                     <Input
                         type="color"
-                        :value="focusElement.state.fontColor"
+                        :value="editElement.state.fontColor"
                         @change="handleChangeFontColor"
                     />
-                </template>
+                </div>
+                <div
+                    v-else-if="
+                        editElement && editElement.elementType === 'image'
+                    "
+                >
+                    <div>
+                        <Input :value="editElement.state.x.toFixed(2)"
+                            ><template #addonBefore>X</template>
+                        </Input>
+                        <Input :value="editElement.state.y.toFixed(2)"
+                            ><template #addonBefore>Y</template>
+                        </Input>
+                        <Input :value="editElement.state.width.toFixed(2)"
+                            ><template #addonBefore>宽</template>
+                        </Input>
+                        <Input :value="editElement.state.height.toFixed(2)"
+                            ><template #addonBefore>高</template>
+                        </Input>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -124,6 +158,7 @@ export default {
     setup() {
         const elements = reactive([]);
         const parent = ref(null);
+        const editElement = ref(null);
         let adsorptionLine = null;
         let selection = null;
         let mouseDownElement = null;
@@ -132,12 +167,11 @@ export default {
         let mousedown = false;
         const meshTransform = new MeshTransform();
 
-        const focusElement = computed(() =>
-            elements.find((v) => v.state.focus)
-        );
-
         onMounted(() => {
             parent.value.addEventListener("mousedown", (e) => {
+                if (!mouseDownElement) {
+                    editElement.value = null;
+                }
                 const mouse = {
                     x: e.clientX - parent.value.offsetLeft,
                     y: e.clientY - parent.value.offsetTop
@@ -271,7 +305,7 @@ export default {
                 adsorptionLine.clear();
 
                 const collectElements = selection.getCollectElements();
-                if (collectElements.length) {
+                if (collectElements && collectElements.length) {
                     const { x, y, width, height } =
                         handleGroupSize(collectElements);
                     const group = new GroupElement({
@@ -348,6 +382,7 @@ export default {
 
         function handleMousedown(v, currentElement) {
             mouseDownElement = currentElement;
+            editElement.value = currentElement;
             mouseDownData = v;
 
             // 置顶
@@ -448,36 +483,46 @@ export default {
                 console.log("error", e);
             };
 
-            tempImg.src = `data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg"><foreignObject width="${width}px" height="${height}px"><body xmlns="http://www.w3.org/1999/xhtml">
-            <div style="width:100%;height=100%;position: relative;background: white;">
+            let styleSrc = "";
+            const $styles = document.querySelectorAll("style");
+            for (let i = 0; i < $styles.length - 1; i++) {
+                const $style = $styles[i];
+                styleSrc += $style.innerHTML;
+            }
+            tempImg.src =
+                `data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg"><foreignObject width="${
+                    width * 2
+                }" height="${
+                    height * 2
+                }"><body xmlns="http://www.w3.org/1999/xhtml">
             ${new XMLSerializer().serializeToString(parent.value)}
-            </div></body></foreignObject></svg>`;
+            <style>${styleSrc}</style></body></foreignObject></svg>`
+                    .replace(/\n/g, "")
+                    .replace(/\t/g, "")
+                    .replace(/#/g, "%23");
+            console.log(tempImg.src);
         }
 
         function handleChangeFontFamily(v) {
-            const focusElement = elements.find((e) => e.state.focus);
-            focusElement.setFontFamily(v);
+            editElement.value.setFontFamily(v);
         }
 
         function handleChangeFontSize(v) {
-            const focusElement = elements.find((e) => e.state.focus);
-            focusElement.setFontSize(v);
+            editElement.value.setFontSize(v);
         }
 
         function handleChangeFontColor(v) {
-            const focusElement = elements.find((e) => e.state.focus);
-            focusElement.setFontColor(v.target.value);
+            editElement.value.setFontColor(v.target.value);
         }
 
         function handleChangeFontText(v) {
-            const focusElement = elements.find((e) => e.state.focus);
-            focusElement.setText(v.target.value);
+            editElement.value.setText(v.target.value);
         }
 
         return {
             elements,
             parent,
-            focusElement,
+            editElement,
 
             handleChangeImage,
             handleStartChangeText,
@@ -543,6 +588,12 @@ export default {
         padding: 24px;
     }
 
+    &__font-bar {
+        > * {
+            margin-bottom: 12px;
+        }
+    }
+
     &__font-family {
         width: 161px;
         margin-right: 12px;
@@ -552,7 +603,6 @@ export default {
         width: 400px;
         height: 600px;
         position: relative;
-        border: 1px solid #eee;
         box-shadow: 1px 1px 15px rgb(0 0 0 / 20%);
 
         // canvas:first-of-type {
