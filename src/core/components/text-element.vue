@@ -3,6 +3,7 @@
         :class="bem()"
         :visibleBox="visibleBox"
         :visibleBoxScale="visibleBoxScale"
+        :visibleBoxScaleY="false"
         :style="style"
         @mousedown-scale="(v) => $emit('drag-before', v)"
     >
@@ -58,6 +59,10 @@ export default defineComponent({
             type: Number,
             default: null
         },
+        fontSize: {
+            type: Number,
+            default: 14
+        },
         text: {
             type: String,
             default: ""
@@ -89,7 +94,8 @@ export default defineComponent({
                 width: props.width + "px",
                 height: props.height + "px",
                 transform: `translate(${props.x}px, ${props.y}px)`,
-                zIndex: props.zIndex
+                zIndex: props.zIndex,
+                fontSize: props.fontSize + "px"
             };
         });
 
@@ -133,19 +139,13 @@ export default defineComponent({
     }
 
     &__text {
-        user-select: none;
-    }
-
-    &__text {
-        font-size: 14px;
         display: block;
         width: 100%;
         height: 100%;
-        border: none;
         overflow-wrap: break-word;
-        padding: 0;
-        background: transparent;
+        user-select: none;
         outline: none;
+        line-height: 1;
     }
 }
 </style>

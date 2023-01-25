@@ -1,10 +1,16 @@
 import { Element } from "./element";
 
 export class TextElement extends Element {
-    constructor({ text, ...options }) {
+    constructor({ text, fontSize = 24, ...options }) {
         super(options);
         this.elementType = "text";
+
+        this.setFontSize(fontSize);
         this.setText(text);
+    }
+
+    setFontSize(fontSize) {
+        this.state.fontSize = fontSize;
     }
 
     setText(text) {

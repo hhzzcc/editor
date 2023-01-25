@@ -32,22 +32,25 @@
                 "
             />
 
-            <div
-                :class="bem('rect', 'top')"
-                @mousedown="
-                    (e) => $emit('mousedown-scale', { type: 'scale-y', e })
-                "
-            />
+            <template v-if="visibleBoxScaleY">
+                <div
+                    :class="bem('rect', 'top')"
+                    @mousedown="
+                        (e) => $emit('mousedown-scale', { type: 'scale-y', e })
+                    "
+                />
+
+                <div
+                    :class="bem('rect', 'bottom')"
+                    @mousedown="
+                        (e) => $emit('mousedown-scale', { type: 'scale-y', e })
+                    "
+                />
+            </template>
             <div
                 :class="bem('rect', 'right')"
                 @mousedown="
                     (e) => $emit('mousedown-scale', { type: 'scale-x', e })
-                "
-            />
-            <div
-                :class="bem('rect', 'bottom')"
-                @mousedown="
-                    (e) => $emit('mousedown-scale', { type: 'scale-y', e })
                 "
             />
             <div
@@ -82,6 +85,10 @@ export default defineComponent({
         visibleBoxScale: {
             type: Boolean,
             default: false
+        },
+        visibleBoxScaleY: {
+            type: Boolean,
+            default: true
         }
     },
     setup() {
