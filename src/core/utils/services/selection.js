@@ -9,6 +9,7 @@ export class Selection {
         canvas.style.position = "absolute";
         canvas.style.top = "0";
         canvas.style.left = "0";
+        canvas.style.zIndex = "9";
         canvas.style.pointerEvents = "none";
         $parent.appendChild(canvas);
 

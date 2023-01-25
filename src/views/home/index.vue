@@ -34,6 +34,8 @@
                                 (v) => handleStartChangeText(v, element)
                             "
                             @change-text="(v) => handleChangeText(v, element)"
+                            @update-width="(v) => element.setWidth(v)"
+                            @update-height="(v) => element.setHeight(v)"
                             @mouseenter="(v) => handleHover(v, element)"
                             @mouseleave="(v) => handleUnHover(v, element)"
                             @focus="(v) => handleFocus(v, element)"

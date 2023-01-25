@@ -13,11 +13,10 @@
             @click="handleClick"
         >
             <div
-                :class="bem('text')"
+                :class="bem('input', { visible: edit })"
                 ref="input"
                 :contenteditable="true"
-                @input="(e) => $emit('change-text', e.target.textContent)"
-                v-show="edit"
+                @input="handleInput"
             >
                 {{ text }}
             </div>
@@ -27,7 +26,14 @@
 </template>
 
 <script>
-import { defineComponent, computed, watch, ref, nextTick } from "vue";
+import {
+    defineComponent,
+    computed,
+    onMounted,
+    ref,
+    nextTick,
+    watch
+} from "vue";
 import { createNamespace } from "../utils/create-bem";
 import Border from "./border.vue";
 
@@ -95,7 +101,8 @@ export default defineComponent({
                 height: props.height + "px",
                 transform: `translate(${props.x}px, ${props.y}px)`,
                 zIndex: props.zIndex,
-                fontSize: props.fontSize + "px"
+                fontSize: props.fontSize + "px",
+                lineHeight: props.fontSize + "px"
             };
         });
 
@@ -114,11 +121,30 @@ export default defineComponent({
             }
         }
 
+        function updateHeight() {
+            emit("update-height", input.value.offsetHeight);
+        }
+
+        function updateWidth() {
+            emit("update-width", input.value.offsetWidth);
+        }
+
+        function handleInput(e) {
+            emit("change-text", e.target.textContent);
+            updateHeight();
+        }
+
+        onMounted(() => {
+            updateWidth();
+            updateHeight();
+        });
+
         return {
             visibleBox,
             visibleBoxScale,
             input,
             handleClick,
+            handleInput,
 
             style,
             bem
@@ -138,14 +164,23 @@ export default defineComponent({
         height: 100%;
     }
 
-    &__text {
+    &__text,
+    &__input {
+        max-width: 100%;
+        position: absolute;
+        left: 0;
+        top: 0;
         display: block;
-        width: 100%;
-        height: 100%;
         overflow-wrap: break-word;
         user-select: none;
         outline: none;
-        line-height: 1;
+    }
+
+    &__input {
+        opacity: 0;
+        &--visible {
+            opacity: 1;
+        }
     }
 }
 </style>
