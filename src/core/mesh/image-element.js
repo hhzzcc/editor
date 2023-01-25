@@ -34,6 +34,7 @@ export class ImageElement extends Element {
     }
 
     async setImgSrc(imgSrc) {
-        this.state.imgSrc = await getBase64(imgSrc);
+        const base64 = await getBase64(imgSrc);
+        this.state.imgSrc = base64;
     }
 }
