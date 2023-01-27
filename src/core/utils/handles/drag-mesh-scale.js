@@ -102,4 +102,37 @@ export function handleDragMeshScale(element, mouse) {
     } else {
         handleDragMeshScaleXY(element, mouse, movementX);
     }
+
+    // if (element.elementType === "group") {
+    //     for (let i = 0; i < element.state.children.length; i++) {
+    //         const child = element.state.children[i];
+    //         handleDragMeshScale(child, mouse);
+    //     }
+    // }
+}
+
+function normalize({ x, y }) {
+    const length = Math.sqrt(x * x + y * y);
+    return {
+        x: x / length,
+        y: y / length
+    };
+}
+
+export function handleDragMeshRotate(element, mouse) {
+    const { x: centerX, y: centerY } = element.getCenterPosition();
+    const { x, y } = mouse;
+    const originUnitVector = { x: 0, y: 1 };
+    const targetUnitVector = normalize({ x: x - centerX, y: y - centerY });
+    const unit = x < centerX ? 1 : -1;
+
+    element.rotate(
+        (unit *
+            (Math.acos(
+                originUnitVector.x * targetUnitVector.x +
+                    originUnitVector.y * targetUnitVector.y
+            ) *
+                180)) /
+            Math.PI
+    );
 }

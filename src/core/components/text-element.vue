@@ -6,6 +6,7 @@
         :visibleBoxScaleY="false"
         :style="style"
         @mousedown-scale="(v) => $emit('drag-before', v)"
+        @mousedown-rotate="(v) => $emit('drag-before', v)"
     >
         <div
             :class="bem('content')"
@@ -68,6 +69,10 @@ export default defineComponent({
             type: Number,
             default: null
         },
+        angle: {
+            type: Number,
+            default: 0
+        },
         fontSize: {
             type: Number,
             default: null
@@ -110,7 +115,7 @@ export default defineComponent({
             return {
                 width: props.width + "px",
                 height: props.height + "px",
-                transform: `translate(${props.x}px, ${props.y}px)`,
+                transform: `translate(${props.x}px, ${props.y}px) rotateZ(${props.angle}deg)`,
                 zIndex: props.zIndex
             };
         });

@@ -65,6 +65,9 @@
                         <Input :value="editElement.state.y.toFixed(2)"
                             ><template #addonBefore>Y</template>
                         </Input>
+                        <Input :value="editElement.state.angle.toFixed(2)"
+                            ><template #addonBefore>旋转角度</template>
+                        </Input>
                     </div>
 
                     <Input
@@ -116,6 +119,9 @@
                         <Input :value="editElement.state.height.toFixed(2)"
                             ><template #addonBefore>高</template>
                         </Input>
+                        <Input :value="editElement.state.angle.toFixed(2)"
+                            ><template #addonBefore>旋转角度</template>
+                        </Input>
                     </div>
                 </div>
             </div>
@@ -140,7 +146,8 @@ import { MeshTransform } from "../../core/utils/services/mesh-transform";
 import {
     handleDragMeshScale,
     handleDragMeshXScale,
-    handleDragMeshYScale
+    handleDragMeshYScale,
+    handleDragMeshRotate
 } from "../../core/utils/handles/drag-mesh-scale";
 import { handleGroupSize } from "../../core/utils/handles/group";
 import { loadImage } from "../../core/utils/handles/dbclick-mesh";
@@ -165,6 +172,15 @@ export default {
         let mouseDownData = null;
         let textElement = null;
         let mousedown = false;
+
+        let prevMousedownLeft = 0,
+            prevMousedownTop = 0;
+
+        let dragTransformElement = null;
+        let dragScaleElement = null;
+        let dragScaleXElement = null;
+        let dragScaleYElement = null;
+        let dragRotateElement = null;
         const meshTransform = new MeshTransform();
 
         onMounted(() => {
@@ -250,6 +266,10 @@ export default {
                         else if (dragScaleYElement) {
                             handleDragMeshYScale(dragScaleYElement, mouse);
                         }
+                        // 拖拽mesh做旋转
+                        else if (dragRotateElement) {
+                            handleDragMeshRotate(dragRotateElement, mouse);
+                        }
                         // 拖拽mesh做移动
                         else if (dragTransformElement) {
                             meshTransform.handleDragMeshTransform({
@@ -285,6 +305,8 @@ export default {
                                 case "scale-y":
                                     dragScaleYElement = mouseDownElement;
                                     break;
+                                case "rotate":
+                                    dragRotateElement = mouseDownElement;
                             }
                         }
                     }
@@ -299,6 +321,7 @@ export default {
                 dragScaleElement = null;
                 dragScaleXElement = null;
                 dragScaleYElement = null;
+                dragRotateElement = null;
 
                 meshTransform.clear();
                 selection.clear();
@@ -403,14 +426,6 @@ export default {
         function handleUnHover(_, currentElement) {
             currentElement.unHover();
         }
-
-        let prevMousedownLeft = 0,
-            prevMousedownTop = 0;
-
-        let dragTransformElement = null;
-        let dragScaleElement = null;
-        let dragScaleXElement = null;
-        let dragScaleYElement = null;
 
         async function handleChangeImage(_, currentElement) {
             const { width, height, src } = await loadImage();

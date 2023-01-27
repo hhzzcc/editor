@@ -5,6 +5,7 @@ export class Element {
             y = 0,
             width = 100,
             height = 100,
+            angle = 0,
             hover = false,
             focus = false,
             operable = true,
@@ -18,7 +19,8 @@ export class Element {
             hover,
             focus,
             operable,
-            zIndex
+            zIndex,
+            angle
         };
     }
 
@@ -69,6 +71,10 @@ export class Element {
 
     setY(y) {
         this.state.y = y;
+    }
+
+    rotate(angle) {
+        this.state.angle = angle;
     }
 
     scale(x, y) {

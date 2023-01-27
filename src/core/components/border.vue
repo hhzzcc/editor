@@ -47,24 +47,36 @@
                     "
                 />
             </template>
-            <div
-                :class="bem('rect', 'right')"
+
+            <template v-if="visibleBoxScaleX">
+                <div
+                    :class="bem('rect', 'right')"
+                    @mousedown="
+                        (e) => $emit('mousedown-scale', { type: 'scale-x', e })
+                    "
+                />
+                <div
+                    :class="bem('rect', 'left')"
+                    @mousedown="
+                        (e) => $emit('mousedown-scale', { type: 'scale-x', e })
+                    "
+                />
+            </template>
+
+            <RedoOutlined
+                :class="bem('rotate')"
                 @mousedown="
-                    (e) => $emit('mousedown-scale', { type: 'scale-x', e })
+                    (e) => $emit('mousedown-rotate', { type: 'rotate', e })
                 "
-            />
-            <div
-                :class="bem('rect', 'left')"
-                @mousedown="
-                    (e) => $emit('mousedown-scale', { type: 'scale-x', e })
-                "
-            />
+            >
+            </RedoOutlined>
         </template>
     </div>
 </template>
 
 <script>
 import { defineComponent } from "vue";
+import { RedoOutlined } from "@ant-design/icons-vue";
 import { createNamespace } from "../utils/create-bem";
 import {
     BORDER_CIRCULAR_SIZE,
@@ -77,6 +89,9 @@ const [name, bem] = createNamespace("border");
 
 export default defineComponent({
     name,
+    components: {
+        RedoOutlined
+    },
     props: {
         visibleBox: {
             type: Boolean,
@@ -87,6 +102,10 @@ export default defineComponent({
             default: false
         },
         visibleBoxScaleY: {
+            type: Boolean,
+            default: true
+        },
+        visibleBoxScaleX: {
             type: Boolean,
             default: true
         }
@@ -191,6 +210,18 @@ export default defineComponent({
             left: calc(-@BORDER_RECT_HEIGHT / 2 - @BORDER_WIDTH / 2);
             cursor: w-resize;
         }
+    }
+
+    &__rotate {
+        position: absolute;
+        padding: 4px;
+        background: #fff;
+        border-radius: 50%;
+        bottom: -40px;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 1px solid #ccc;
+        cursor: grab;
     }
 }
 </style>
