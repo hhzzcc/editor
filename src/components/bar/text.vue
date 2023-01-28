@@ -1,5 +1,6 @@
 <template>
     <div class="text-bar">
+        <div>文字</div>
         <div>
             <Input
                 :value="x"

@@ -18,7 +18,7 @@
             </div>
 
             <div class="home-view__right">
-                <div v-if="!editElement">画布工具</div>
+                <SceneBar v-if="!editElement" :width="400" :height="600" />
                 <ImageBar
                     v-else-if="editElement.elementType === 'image'"
                     :x="editElement.state.x"
@@ -72,6 +72,7 @@
 import ImageBar from "../../components/bar/image.vue";
 import TextBar from "../../components/bar/text.vue";
 import GroupBar from "../../components/bar/group.vue";
+import SceneBar from "../../components/bar/scene.vue";
 
 import { onMounted, ref, nextTick } from "vue";
 
@@ -86,7 +87,8 @@ export default {
     components: {
         ImageBar,
         TextBar,
-        GroupBar
+        GroupBar,
+        SceneBar
     },
     setup() {
         const parent = ref(null);

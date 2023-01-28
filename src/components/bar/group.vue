@@ -1,5 +1,6 @@
 <template>
     <div class="image-bar">
+        <div>组</div>
         <Input :value="x" @change="(v) => $emit('change-x', +v.target.value)">
             <template #addonBefore>X</template>
         </Input>
