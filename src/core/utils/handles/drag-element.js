@@ -104,6 +104,23 @@ export function handleDragElementScale(element, mouse) {
         const { height } = element.state;
         handleDragElementYScale(element, mouse, movementY / 1.5);
         handleDragElementFontSizeScale(element, mouse, height);
+    } else if (element.elementType === "group") {
+        const { width: preWidth, height: preHeight } = element.state;
+        handleDragElementScaleXY(element, mouse, movementX);
+        const { width: newWidth, height: newHeight } = element.state;
+
+        for (let i = 0; i < element.state.children.length; i++) {
+            const child = element.state.children[i];
+            const widthRadio = newWidth / preWidth;
+            const heightRadio = newHeight / preHeight;
+            child.setWidth(widthRadio * child.state.width);
+            child.setHeight(heightRadio * child.state.height);
+            child.setX(widthRadio * child.state.x);
+            child.setY(heightRadio * child.state.y);
+            // if (child.elementType === "group") {
+            //     handleDragElementScale(child, mouse);
+            // }
+        }
     } else {
         handleDragElementScaleXY(element, mouse, movementX);
     }
