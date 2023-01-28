@@ -1,27 +1,37 @@
 import { BREAK_ADSORPTION_DISTANCE } from "../constants";
 
-function getTransformX({ type, targetMeshX, originMeshX, originMeshWidth }) {
+function getTransformX({
+    type,
+    targetElementX,
+    originElementX,
+    originElementWidth
+}) {
     switch (type) {
         case "left":
-            return targetMeshX - originMeshX;
+            return targetElementX - originElementX;
         case "center":
-            return targetMeshX - originMeshX - originMeshWidth / 2;
+            return targetElementX - originElementX - originElementWidth / 2;
         case "right":
-            return targetMeshX - originMeshX - originMeshWidth;
+            return targetElementX - originElementX - originElementWidth;
     }
 }
 
-function getTransformY({ type, targetMeshY, originMeshY, originMeshHeight }) {
+function getTransformY({
+    type,
+    targetElementY,
+    originElementY,
+    originElementHeight
+}) {
     switch (type) {
         case "top":
-            return targetMeshY - originMeshY;
+            return targetElementY - originElementY;
         case "center":
-            return targetMeshY - originMeshY - originMeshHeight / 2;
+            return targetElementY - originElementY - originElementHeight / 2;
         case "bottom":
-            return targetMeshY - originMeshY - originMeshHeight;
+            return targetElementY - originElementY - originElementHeight;
     }
 }
-export class MeshTransform {
+export class ElementTransform {
     constructor() {
         this.clear();
     }
@@ -31,8 +41,8 @@ export class MeshTransform {
         this.offsetY = 0;
     }
 
-    handleDragMeshTransform({ mouse, mesh, onTransform }) {
-        const { x, y, xType, yType } = onTransform(mesh);
+    handleDragElementTransform({ mouse, element, onTransform }) {
+        const { x, y, xType, yType } = onTransform(element);
         const transformDragX = mouse.movementX;
         const transformDragY = mouse.movementY;
         const distanceX = mouse.x - this.offsetX;
@@ -43,18 +53,18 @@ export class MeshTransform {
             this.offsetX !== 0 &&
             Math.abs(distanceX) > BREAK_ADSORPTION_DISTANCE
         ) {
-            mesh.transformX(distanceX);
+            element.transformX(distanceX);
             this.offsetX = 0;
         }
         // 吸附
         else if (xType) {
             const transformAdsorptionX = getTransformX({
                 type: xType,
-                targetMeshX: x,
-                originMeshX: mesh.state.x,
-                originMeshWidth: mesh.state.width
+                targetElementX: x,
+                originElementX: element.state.x,
+                originElementWidth: element.state.width
             });
-            mesh.transformX(transformAdsorptionX);
+            element.transformX(transformAdsorptionX);
             // 记录吸附位置
             if (this.offsetX === 0) {
                 this.offsetX = mouse.x;
@@ -62,7 +72,7 @@ export class MeshTransform {
         }
         // 自由拖拽
         else {
-            mesh.transformX(transformDragX);
+            element.transformX(transformDragX);
             this.offsetX = 0;
         }
 
@@ -71,18 +81,18 @@ export class MeshTransform {
             this.offsetY !== 0 &&
             Math.abs(distanceY) > BREAK_ADSORPTION_DISTANCE
         ) {
-            mesh.transformY(distanceY);
+            element.transformY(distanceY);
             this.offsetY = 0;
         }
         // 吸附
         else if (yType) {
             const transformAdsorptionY = getTransformY({
                 type: yType,
-                targetMeshY: y,
-                originMeshY: mesh.state.y,
-                originMeshHeight: mesh.state.height
+                targetElementY: y,
+                originElementY: element.state.y,
+                originElementHeight: element.state.height
             });
-            mesh.transformY(transformAdsorptionY);
+            element.transformY(transformAdsorptionY);
             // 记录吸附位置
             if (this.offsetY === 0) {
                 this.offsetY = mouse.y;
@@ -90,7 +100,7 @@ export class MeshTransform {
         }
         // 自由拖拽
         else {
-            mesh.transformY(transformDragY);
+            element.transformY(transformDragY);
             this.offsetY = 0;
         }
     }

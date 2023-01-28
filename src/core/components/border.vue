@@ -99,10 +99,10 @@ export default defineComponent({
 <style lang="less">
 @b: border;
 @BORDER_RECT_WIDTH: 16px;
-@BORDER_RECT_HEIGHT: 8px;
+@BORDER_RECT_HEIGHT: 10px;
 @BORDER_WIDTH: 2px;
-@BORDER_CIRCULAR_SIZE: 10px;
-@BORDER_CIRCULAR_RADIUS: 5px;
+@BORDER_CIRCULAR_SIZE: 12px;
+@BORDER_CIRCULAR_RADIUS: 7px;
 .@{b} {
     &--visible-box {
         box-shadow: 0 0 0 @BORDER_WIDTH blue;
@@ -154,7 +154,7 @@ export default defineComponent({
             height: @BORDER_RECT_HEIGHT;
             left: 50%;
             transform: translateX(-50%);
-            top: calc(-@BORDER_RECT_HEIGHT / 2);
+            top: calc(-@BORDER_RECT_HEIGHT / 2 - 1px);
             cursor: n-resize;
         }
 
@@ -172,7 +172,7 @@ export default defineComponent({
             height: @BORDER_RECT_HEIGHT;
             left: 50%;
             transform: translateX(-50%);
-            bottom: calc(-@BORDER_RECT_HEIGHT / 2);
+            bottom: calc(-@BORDER_RECT_HEIGHT / 2 - 1px);
             cursor: s-resize;
         }
 

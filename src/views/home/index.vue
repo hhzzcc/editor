@@ -9,8 +9,8 @@
         </div>
         <div class="home-view__body">
             <div class="home-view__left">
-                <button @click="handleAddMesh('image')">添加图片</button>
-                <button @click="handleAddMesh('text')">添加文字</button>
+                <button @click="handleAddElement('image')">添加图片</button>
+                <button @click="handleAddElement('text')">添加文字</button>
             </div>
 
             <div class="home-view__content">
@@ -147,11 +147,11 @@ import { onMounted, ref, reactive, nextTick } from "vue";
 
 import { AdsorptionLine } from "../../core/utils/services/adsorption-line";
 import { Selection } from "../../core/utils/services/selection";
-import { ImageElement } from "../../core/mesh/image-element";
-import { TextElement } from "../../core/mesh/text-element";
-import { GroupElement } from "../../core/mesh/group-element";
+import { ImageElement } from "../../core/element/image-element";
+import { TextElement } from "../../core/element/text-element";
+import { GroupElement } from "../../core/element/group-element";
 
-import { MeshTransform } from "../../core/utils/services/mesh-transform";
+import { ElementTransform } from "../../core/utils/services/element-transform";
 import {
     handleDragElementScale,
     handleDragElementXScale,
@@ -160,7 +160,7 @@ import {
 } from "../../core/utils/handles/drag-element";
 import { handleGroupSize } from "../../core/utils/handles/group";
 import { downloadDom } from "../../core/utils/download";
-import { loadImage } from "../../core/utils/handles/dbclick-mesh";
+import { loadImage } from "../../core/utils/handles/dbclick-element";
 
 export default {
     name: "home-view",
@@ -191,7 +191,7 @@ export default {
         let dragScaleXElement = null;
         let dragScaleYElement = null;
         let dragRotateElement = null;
-        const meshTransform = new MeshTransform();
+        const elementTransform = new ElementTransform();
 
         onMounted(() => {
             parent.value.addEventListener("mousedown", (e) => {
@@ -258,26 +258,29 @@ export default {
                 prevMousedownTop = e.clientY;
 
                 if (mousedown) {
-                    // 拖拽mesh做xy轴缩放
+                    // 拖拽element做xy轴缩放
                     if (dragScaleXYElement) {
                         handleDragElementScale(dragScaleXYElement, mouse);
                     }
-                    // 拖拽mesh做x轴缩放
+                    // 拖拽element做x轴缩放
                     else if (dragScaleXElement) {
                         handleDragElementXScale(dragScaleXElement, mouse);
                     }
-                    // 拖拽mesh做y轴缩放
+                    // 拖拽element做y轴缩放
                     else if (dragScaleYElement) {
                         handleDragElementYScale(dragScaleYElement, mouse);
                     }
-                    // 拖拽mesh做旋转
+                    // 拖拽element做旋转
                     else if (dragRotateElement) {
                         handleDragElementRotate(dragRotateElement, mouse);
                     }
-                    // 拖拽mesh做移动
+                    // 拖拽element做移动
                     else if (dragTransformElement) {
-                        meshTransform.handleDragMeshTransform({
-                            mesh: dragTransformElement,
+                        dragTransformElement.unHover();
+                        dragTransformElement.blur();
+
+                        elementTransform.handleDragElementTransform({
+                            element: dragTransformElement,
                             mouse,
                             onTransform() {
                                 // 更新吸附线
@@ -314,7 +317,7 @@ export default {
                 dragScaleYElement = null;
                 dragRotateElement = null;
 
-                meshTransform.clear();
+                elementTransform.clear();
                 selection.clear();
                 adsorptionLine.clear();
 
@@ -478,7 +481,7 @@ export default {
             element.updateSize();
         }
 
-        function handleAddMesh(type) {
+        function handleAddElement(type) {
             if (type === "image") {
                 elements.push(
                     new ImageElement({
@@ -532,7 +535,7 @@ export default {
             handleMouseenterContent,
             handleMouseleaveContent,
 
-            handleAddMesh,
+            handleAddElement,
             handleDownload
         };
     }

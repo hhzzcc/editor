@@ -1,5 +1,4 @@
 import { Element } from "./element";
-import GroupElementComponent from "../components/group-element.vue";
 
 export class GroupElement extends Element {
     constructor({ children, ...options }) {

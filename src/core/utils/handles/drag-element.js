@@ -107,13 +107,6 @@ export function handleDragElementScale(element, mouse) {
     } else {
         handleDragElementScaleXY(element, mouse, movementX);
     }
-
-    // if (element.elementType === "group") {
-    //     for (let i = 0; i < element.state.children.length; i++) {
-    //         const child = element.state.children[i];
-    //         handleDragMeshScale(child, mouse);
-    //     }
-    // }
 }
 
 function normalize({ x, y }) {

@@ -1,4 +1,4 @@
-// 框选碰撞mesh
+// 矩形碰撞
 export function isRectCollectRect({
     x1,
     y1,
