@@ -5,12 +5,14 @@
         :visibleBoxScale="visibleBoxScale"
         :visibleBoxScaleY="false"
         :style="style"
-        @mousedown-scale="(v) => $emit('drag-before', v)"
-        @mousedown-rotate="(v) => $emit('drag-before', v)"
+        @mousedown-scale-xy="$emit('mousedown-scale-xy')"
+        @mousedown-rotate="$emit('mousedown-scale-rotate')"
     >
         <div
             :class="bem('content')"
-            @mousedown="(e) => $emit('drag-before', { type: 'content', e })"
+            @mousedown="$emit('mousedown-content')"
+            @mouseenter="$emit('mouseenter-content')"
+            @mouseleave="$emit('mouseleave-content')"
             @click="handleClick"
         >
             <div
@@ -30,14 +32,7 @@
 </template>
 
 <script>
-import {
-    defineComponent,
-    computed,
-    onMounted,
-    ref,
-    nextTick,
-    watch
-} from "vue";
+import { defineComponent, computed, onMounted, ref, nextTick } from "vue";
 import { createNamespace } from "../utils/create-bem";
 import Border from "./border.vue";
 
@@ -129,9 +124,9 @@ export default defineComponent({
             };
         });
 
-        function handleClick(e) {
+        function handleClick() {
             if (props.focus && !props.edit) {
-                emit("start-change-text", { type: "content", e });
+                emit("start-change-text");
                 nextTick(() => {
                     input.value.focus();
                     const range = document.createRange();
@@ -140,7 +135,7 @@ export default defineComponent({
                     window.getSelection().addRange(range);
                 });
             } else {
-                emit("focus", { type: "content", e });
+                emit("click-content");
             }
         }
 

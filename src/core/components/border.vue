@@ -11,63 +11,47 @@
         <template v-if="visibleBox && visibleBoxScale">
             <div
                 :class="bem('circular', 'left-top')"
-                @mousedown="$emit('mousedown-scale', { type: 'scale-xy', e })"
+                @mousedown="$emit('mousedown-scale-xy')"
             />
             <div
                 :class="bem('circular', 'right-top')"
-                @mousedown="
-                    (e) => $emit('mousedown-scale', { type: 'scale-xy', e })
-                "
+                @mousedown="(e) => $emit('mousedown-scale-xy')"
             />
             <div
                 :class="bem('circular', 'right-bottom')"
-                @mousedown="
-                    (e) => $emit('mousedown-scale', { type: 'scale-xy', e })
-                "
+                @mousedown="(e) => $emit('mousedown-scale-xy')"
             />
             <div
                 :class="bem('circular', 'left-bottom')"
-                @mousedown="
-                    (e) => $emit('mousedown-scale', { type: 'scale-xy', e })
-                "
+                @mousedown="(e) => $emit('mousedown-scale-xy')"
             />
 
             <template v-if="visibleBoxScaleY">
                 <div
                     :class="bem('rect', 'top')"
-                    @mousedown="
-                        (e) => $emit('mousedown-scale', { type: 'scale-y', e })
-                    "
+                    @mousedown="(e) => $emit('mousedown-scale-y')"
                 />
 
                 <div
                     :class="bem('rect', 'bottom')"
-                    @mousedown="
-                        (e) => $emit('mousedown-scale', { type: 'scale-y', e })
-                    "
+                    @mousedown="(e) => $emit('mousedown-scale-y')"
                 />
             </template>
 
             <template v-if="visibleBoxScaleX">
                 <div
                     :class="bem('rect', 'right')"
-                    @mousedown="
-                        (e) => $emit('mousedown-scale', { type: 'scale-x', e })
-                    "
+                    @mousedown="(e) => $emit('mousedown-scale-x')"
                 />
                 <div
                     :class="bem('rect', 'left')"
-                    @mousedown="
-                        (e) => $emit('mousedown-scale', { type: 'scale-x', e })
-                    "
+                    @mousedown="(e) => $emit('mousedown-scale-x')"
                 />
             </template>
 
             <RedoOutlined
                 :class="bem('rotate')"
-                @mousedown="
-                    (e) => $emit('mousedown-rotate', { type: 'rotate', e })
-                "
+                @mousedown="(e) => $emit('mousedown-rotate')"
             >
             </RedoOutlined>
         </template>
@@ -78,12 +62,6 @@
 import { defineComponent } from "vue";
 import { RedoOutlined } from "@ant-design/icons-vue";
 import { createNamespace } from "../utils/create-bem";
-import {
-    BORDER_CIRCULAR_SIZE,
-    BORDER_WIDTH,
-    BORDER_RECT_WIDTH,
-    BORDER_RECT_HEIGHT
-} from "../utils/constants";
 
 const [name, bem] = createNamespace("border");
 
@@ -112,11 +90,7 @@ export default defineComponent({
     },
     setup() {
         return {
-            bem,
-            BORDER_WIDTH,
-            BORDER_CIRCULAR_SIZE,
-            BORDER_RECT_WIDTH,
-            BORDER_RECT_HEIGHT
+            bem
         };
     }
 });

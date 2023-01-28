@@ -4,14 +4,18 @@
         :visibleBox="visibleBox"
         :visibleBoxScale="visibleBoxScale"
         :style="style"
-        @mousedown-scale="(v) => $emit('drag-before', v)"
-        @mousedown-rotate="(v) => $emit('drag-before', v)"
+        @mousedown-scale-xy="$emit('mousedown-scale-xy')"
+        @mousedown-scale-x="$emit('mousedown-scale-x')"
+        @mousedown-scale-y="$emit('mousedown-scale-y')"
+        @mousedown-rotate="$emit('mousedown-scale-rotate')"
     >
         <div
             :class="bem('content')"
-            @mousedown="(e) => $emit('drag-before', { type: 'content', e })"
-            @click="(e) => $emit('focus', { type: 'content', e })"
-            @dblclick="(e) => $emit('change-image', { type: 'content', e })"
+            @mousedown="$emit('mousedown-content')"
+            @mouseenter="$emit('mouseenter-content')"
+            @mouseleave="$emit('mouseleave-content')"
+            @click="$emit('click-content')"
+            @dblclick="$emit('db-click-content')"
         >
             <img :src="imgSrc" v-if="imgSrc" />
         </div>

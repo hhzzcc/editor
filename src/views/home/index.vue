@@ -19,111 +19,107 @@
                         <ImageElementComponent
                             v-if="element.elementType === 'image'"
                             v-bind="element.state"
-                            @drag-before="(v) => handleMousedown(v, element)"
-                            @change-Image="(v) => handleChangeImage(v, element)"
-                            @mouseenter="(v) => handleHover(v, element)"
-                            @mouseleave="(v) => handleUnHover(v, element)"
-                            @focus="(v) => handleFocus(v, element)"
+                            @mousedown-scale-xy="
+                                handleMousedownScaleXY(element)
+                            "
+                            @mousedown-scale-x="handleMousedownScaleX(element)"
+                            @mousedown-scale-y="handleMousedownScaleY(element)"
+                            @mousedown-rotate="handleMousedownRotate(element)"
+                            @mousedown-content="handleMousedownContent(element)"
+                            @db-click-content="handleDbClickContent(element)"
+                            @mouseenter-content="
+                                handleMouseenterContent(element)
+                            "
+                            @mouseleave-content="
+                                handleMouseleaveContent(element)
+                            "
+                            @click-content="handleClickContent(element)"
                         />
 
                         <TextElementComponent
                             v-else-if="element.elementType === 'text'"
                             v-bind="element.state"
-                            @drag-before="(v) => handleMousedown(v, element)"
-                            @start-change-text="
-                                (v) => handleStartChangeText(v, element)
-                            "
+                            @start-change-text="handleStartChangeText(element)"
                             @change-text="(v) => handleChangeText(v, element)"
                             @update-width="(v) => element.setWidth(v)"
                             @update-height="(v) => element.setHeight(v)"
-                            @mouseenter="(v) => handleHover(v, element)"
-                            @mouseleave="(v) => handleUnHover(v, element)"
-                            @focus="(v) => handleFocus(v, element)"
+                            @mousedown-scale-xy="
+                                handleMousedownScaleXY(element)
+                            "
+                            @mousedown-rotate="handleMousedownRotate(element)"
+                            @mousedown-content="handleMousedownContent(element)"
+                            @mouseenter-content="
+                                handleMouseenterContent(element)
+                            "
+                            @mouseleave-content="
+                                handleMouseleaveContent(element)
+                            "
+                            @click-content="handleClickContent(element)"
                         />
 
                         <GroupElementComponent
                             v-else-if="element.elementType === 'group'"
                             v-bind="element.state"
-                            @drag-before="(v) => handleMousedown(v, element)"
-                            @mouseenter="(v) => handleHover(v, element)"
-                            @mouseleave="(v) => handleUnHover(v, element)"
-                            @focus="(v) => handleFocus(v, element)"
+                            @mousedown-scale-xy="
+                                handleMousedownScaleXY(element)
+                            "
+                            @mousedown-rotate="handleMousedownRotate(element)"
+                            @mousedown-content="handleMousedownContent(element)"
+                            @mouseenter-content="
+                                handleMouseenterContent(element)
+                            "
+                            @mouseleave-content="
+                                handleMouseleaveContent(element)
+                            "
+                            @click-content="handleClickContent(element)"
                         />
                     </template>
                 </div>
             </div>
 
             <div class="home-view__right">
-                <div
-                    class="home-view__font-bar"
-                    v-if="editElement && editElement.elementType === 'text'"
-                >
-                    <div>
-                        <Input :value="editElement.state.x.toFixed(2)">
-                            <template #addonBefore>X</template>
-                        </Input>
-                        <Input :value="editElement.state.y.toFixed(2)"
-                            ><template #addonBefore>Y</template>
-                        </Input>
-                        <Input :value="editElement.state.angle.toFixed(2)"
-                            ><template #addonBefore>旋转角度</template>
-                        </Input>
-                    </div>
+                <div v-if="!editElement">画布工具</div>
+                <ImageBar
+                    v-else-if="editElement.elementType === 'image'"
+                    :x="editElement.state.x"
+                    :y="editElement.state.y"
+                    :width="editElement.state.width"
+                    :height="editElement.state.height"
+                    :angle="editElement.state.angle"
+                    @change-x="(v) => editElement.setX(v)"
+                    @change-y="(v) => editElement.setY(v)"
+                    @change-width="(v) => editElement.setWidth(v)"
+                    @change-height="(v) => editElement.setHeight(v)"
+                    @change-angle="(v) => editElement.setAngle(v)"
+                />
 
-                    <Input
-                        :value="editElement.state.text"
-                        @change="handleChangeFontText"
-                        ><template #addonBefore>内容</template>
-                    </Input>
+                <TextBar
+                    v-else-if="editElement.elementType === 'text'"
+                    :x="editElement.state.x"
+                    :y="editElement.state.y"
+                    :angle="editElement.state.angle"
+                    :text="editElement.state.text"
+                    :fontSize="editElement.state.fontSize"
+                    :fontColor="editElement.state.fontColor"
+                    :fontFamily="editElement.state.fontFamily"
+                    @change-x="(v) => editElement.setX(v)"
+                    @change-y="(v) => editElement.setY(v)"
+                    @change-angle="(v) => editElement.setAngle(v)"
+                    @change-text="(v) => editElement.setText(v)"
+                    @change-font-size="(v) => editElement.setFontSize(v)"
+                    @change-font-family="(v) => editElement.setFontFamily(v)"
+                    @change-font-color="(v) => editElement.setFontColor(v)"
+                />
 
-                    <Select
-                        :value="editElement.state.fontFamily"
-                        class="home-view__font-family"
-                        @change="handleChangeFontFamily"
-                    >
-                        <template #addonBefore>X</template>
-                        <SelectOption value="serif">serif</SelectOption>
-                        <SelectOption value="fangsong">仿宋</SelectOption>
-                    </Select>
-
-                    <Select
-                        :value="editElement.state.fontSize.toFixed(1)"
-                        class="home-view__font-family"
-                        @change="handleChangeFontSize"
-                    >
-                        <SelectOption :value="14">14px</SelectOption>
-                        <SelectOption :value="20">20px</SelectOption>
-                    </Select>
-
-                    <Input
-                        type="color"
-                        :value="editElement.state.fontColor"
-                        @change="handleChangeFontColor"
-                    />
-                </div>
-                <div
-                    v-else-if="
-                        editElement && editElement.elementType === 'image'
-                    "
-                >
-                    <div>
-                        <Input :value="editElement.state.x.toFixed(2)"
-                            ><template #addonBefore>X</template>
-                        </Input>
-                        <Input :value="editElement.state.y.toFixed(2)"
-                            ><template #addonBefore>Y</template>
-                        </Input>
-                        <Input :value="editElement.state.width.toFixed(2)"
-                            ><template #addonBefore>宽</template>
-                        </Input>
-                        <Input :value="editElement.state.height.toFixed(2)"
-                            ><template #addonBefore>高</template>
-                        </Input>
-                        <Input :value="editElement.state.angle.toFixed(2)"
-                            ><template #addonBefore>旋转角度</template>
-                        </Input>
-                    </div>
-                </div>
+                <GroupBar
+                    v-else-if="editElement.elementType === 'group'"
+                    :x="editElement.state.x"
+                    :y="editElement.state.y"
+                    :angle="editElement.state.angle"
+                    @change-x="(v) => editElement.setX(v)"
+                    @change-y="(v) => editElement.setY(v)"
+                    @change-angle="(v) => editElement.setAngle(v)"
+                />
             </div>
         </div>
     </div>
@@ -134,8 +130,12 @@ import ImageElementComponent from "../../core/components/image-element.vue";
 import GroupElementComponent from "../../core/components/group-element.vue";
 import TextElementComponent from "../../core/components/text-element.vue";
 
+import ImageBar from "../../components/bar/image.vue";
+import TextBar from "../../components/bar/text.vue";
+import GroupBar from "../../components/bar/group.vue";
+
 import { onMounted, ref, reactive, computed, nextTick } from "vue";
-import { Select, SelectOption, Input } from "ant-design-vue";
+
 import { AdsorptionLine } from "../../core/utils/services/adsorption-line";
 import { Selection } from "../../core/utils/services/selection";
 import { ImageElement } from "../../core/mesh/image-element";
@@ -144,12 +144,13 @@ import { GroupElement } from "../../core/mesh/group-element";
 
 import { MeshTransform } from "../../core/utils/services/mesh-transform";
 import {
-    handleDragMeshScale,
-    handleDragMeshXScale,
-    handleDragMeshYScale,
-    handleDragMeshRotate
-} from "../../core/utils/handles/drag-mesh-scale";
+    handleDragElementScale,
+    handleDragElementXScale,
+    handleDragElementYScale,
+    handleDragElementRotate
+} from "../../core/utils/handles/drag-element";
 import { handleGroupSize } from "../../core/utils/handles/group";
+import { downloadDom } from "../../core/utils/download";
 import { loadImage } from "../../core/utils/handles/dbclick-mesh";
 
 export default {
@@ -158,9 +159,10 @@ export default {
         ImageElementComponent,
         GroupElementComponent,
         TextElementComponent,
-        Select,
-        SelectOption,
-        Input
+
+        ImageBar,
+        TextBar,
+        GroupBar
     },
     setup() {
         const elements = reactive([]);
@@ -169,7 +171,6 @@ export default {
         let adsorptionLine = null;
         let selection = null;
         let mouseDownElement = null;
-        let mouseDownData = null;
         let textElement = null;
         let mousedown = false;
 
@@ -177,7 +178,7 @@ export default {
             prevMousedownTop = 0;
 
         let dragTransformElement = null;
-        let dragScaleElement = null;
+        let dragScaleXYElement = null;
         let dragScaleXElement = null;
         let dragScaleYElement = null;
         let dragRotateElement = null;
@@ -185,9 +186,12 @@ export default {
 
         onMounted(() => {
             parent.value.addEventListener("mousedown", (e) => {
+                mousedown = true;
+
                 if (!mouseDownElement) {
                     editElement.value = null;
                 }
+
                 const mouse = {
                     x: e.clientX - parent.value.offsetLeft,
                     y: e.clientY - parent.value.offsetTop
@@ -230,7 +234,6 @@ export default {
                     }
                 }
 
-                mousedown = true;
                 selection.ready({ originX: mouse.x, originY: mouse.y });
             });
 
@@ -246,69 +249,49 @@ export default {
                 prevMousedownTop = e.clientY;
 
                 if (mousedown) {
-                    if (!mouseDownElement) {
+                    // 拖拽mesh做xy轴缩放
+                    if (dragScaleXYElement) {
+                        handleDragElementScale(dragScaleXYElement, mouse);
+                    }
+                    // 拖拽mesh做x轴缩放
+                    else if (dragScaleXElement) {
+                        handleDragElementXScale(dragScaleXElement, mouse);
+                    }
+                    // 拖拽mesh做y轴缩放
+                    else if (dragScaleYElement) {
+                        handleDragElementYScale(dragScaleYElement, mouse);
+                    }
+                    // 拖拽mesh做旋转
+                    else if (dragRotateElement) {
+                        handleDragElementRotate(dragRotateElement, mouse);
+                    }
+                    // 拖拽mesh做移动
+                    else if (dragTransformElement) {
+                        meshTransform.handleDragMeshTransform({
+                            mesh: dragTransformElement,
+                            mouse,
+                            onTransform() {
+                                // 更新吸附线
+                                const { x, y, xType, yType } =
+                                    adsorptionLine.update({
+                                        originElement: dragTransformElement,
+                                        targetElements: elements
+                                    });
+                                return {
+                                    x,
+                                    y,
+                                    xType,
+                                    yType
+                                };
+                            }
+                        });
+                    } else {
                         // 更新框选层的样式
                         selection.update({
                             x: mouse.x,
                             y: mouse.y,
                             targetElements: elements
                         });
-                    } else {
-                        // 拖拽mesh做xy轴缩放
-                        if (dragScaleElement) {
-                            handleDragMeshScale(dragScaleElement, mouse);
-                        }
-                        // 拖拽mesh做x轴缩放
-                        else if (dragScaleXElement) {
-                            handleDragMeshXScale(dragScaleXElement, mouse);
-                        }
-                        // 拖拽mesh做y轴缩放
-                        else if (dragScaleYElement) {
-                            handleDragMeshYScale(dragScaleYElement, mouse);
-                        }
-                        // 拖拽mesh做旋转
-                        else if (dragRotateElement) {
-                            handleDragMeshRotate(dragRotateElement, mouse);
-                        }
-                        // 拖拽mesh做移动
-                        else if (dragTransformElement) {
-                            meshTransform.handleDragMeshTransform({
-                                mesh: dragTransformElement,
-                                mouse,
-                                onTransform() {
-                                    // 更新吸附线
-                                    const { x, y, xType, yType } =
-                                        adsorptionLine.update({
-                                            originElement: dragTransformElement,
-                                            targetElements: elements
-                                        });
-                                    return {
-                                        x,
-                                        y,
-                                        xType,
-                                        yType
-                                    };
-                                }
-                            });
-                        } else {
-                            const { type } = mouseDownData;
-                            switch (type) {
-                                case "content":
-                                    dragTransformElement = mouseDownElement;
-                                    break;
-                                case "scale-xy":
-                                    dragScaleElement = mouseDownElement;
-                                    break;
-                                case "scale-x":
-                                    dragScaleXElement = mouseDownElement;
-                                    break;
-                                case "scale-y":
-                                    dragScaleYElement = mouseDownElement;
-                                    break;
-                                case "rotate":
-                                    dragRotateElement = mouseDownElement;
-                            }
-                        }
                     }
                 }
             });
@@ -316,9 +299,8 @@ export default {
             document.addEventListener("mouseup", () => {
                 mousedown = false;
                 mouseDownElement = null;
-                mouseDownData = null;
                 dragTransformElement = null;
-                dragScaleElement = null;
+                dragScaleXYElement = null;
                 dragScaleXElement = null;
                 dragScaleYElement = null;
                 dragRotateElement = null;
@@ -359,6 +341,7 @@ export default {
                     group.temporary();
                     group.focus();
                     elements.push(group);
+                    editElement.value = group;
                 }
             });
 
@@ -399,44 +382,70 @@ export default {
             });
         });
 
-        function handleFocus(v, currentElement) {
-            currentElement.focus();
+        function handleClickContent(element) {
+            element.focus();
         }
 
-        function handleMousedown(v, currentElement) {
-            mouseDownElement = currentElement;
-            editElement.value = currentElement;
-            mouseDownData = v;
+        function handleMousedownScaleXY(element) {
+            handleMousedown(element);
+            dragScaleXYElement = element;
+        }
 
-            // 置顶
+        function handleMousedownScaleX(element) {
+            handleMousedown(element);
+            dragScaleXElement = element;
+        }
+
+        function handleMousedownScaleY(element) {
+            handleMousedown(element);
+            dragScaleYElement = element;
+        }
+
+        function handleMousedownContent(element) {
+            handleMousedown(element);
+            dragTransformElement = element;
+        }
+
+        function handleMousedownRotate(element) {
+            handleMousedown(element);
+            dragRotateElement = element;
+        }
+
+        function handleMousedown(element) {
+            handleTop(element);
+            mouseDownElement = element;
+            editElement.value = element;
+        }
+
+        // 置顶
+        function handleTop(element) {
             for (let i = 0; i < elements.length; i++) {
-                const element = elements[i];
-                if (element === currentElement) {
-                    element.setZIndex(1);
+                if (element === elements[i]) {
+                    elements[i].setZIndex(1);
                 } else {
-                    element.setZIndex(null);
+                    elements[i].setZIndex(null);
                 }
             }
         }
 
-        function handleHover(_, currentElement) {
-            currentElement.hover();
+        function handleMouseenterContent(element) {
+            element.hover();
         }
 
-        function handleUnHover(_, currentElement) {
-            currentElement.unHover();
+        function handleMouseleaveContent(element) {
+            element.unHover();
         }
 
-        async function handleChangeImage(_, currentElement) {
+        async function handleDbClickContent(element) {
             const { width, height, src } = await loadImage();
-            currentElement.setWidth(width);
-            currentElement.setHeight(height);
-            currentElement.setImgSrc(src);
+            element.setWidth(width);
+            element.setHeight(height);
+            element.setImgSrc(src);
         }
 
-        function handleStartChangeText(_, currentElement) {
-            textElement = currentElement;
-            currentElement.startEdit();
+        function handleStartChangeText(element) {
+            textElement = element;
+            element.startEdit();
         }
 
         function handleChangeText(value, currentElement) {
@@ -472,68 +481,10 @@ export default {
                 const element = elements[i];
                 element.blur();
             }
-            const width = parent.value.offsetWidth;
-            const height = parent.value.offsetHeight;
-
-            const tempImg = new Image();
-            tempImg.width = width;
-            tempImg.height = height;
-            tempImg.onload = function () {
-                const canvas = document.createElement("canvas");
-                const ctx = canvas.getContext("2d");
-                canvas.width = width;
-                canvas.height = height;
-                ctx.clearRect(0, 0, width, height);
-                ctx.drawImage(this, 0, 0, width, height);
-                const MIME_TYPE = "image/png";
-                const imgURL = canvas.toDataURL(MIME_TYPE);
-                const dlLink = document.createElement("a");
-                dlLink.download = "下载.png";
-                dlLink.href = imgURL;
-                dlLink.dataset.downloadurl = [
-                    MIME_TYPE,
-                    dlLink.download,
-                    dlLink.href
-                ].join(":");
-
-                dlLink.click();
-            };
 
             nextTick(() => {
-                let styleSrc = "";
-                const $styles = document.querySelectorAll("style");
-                for (let i = 0; i < $styles.length - 1; i++) {
-                    const $style = $styles[i];
-                    styleSrc += $style.innerHTML;
-                }
-                tempImg.src =
-                    `data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg"><foreignObject width="${
-                        width * 2
-                    }" height="${
-                        height * 2
-                    }"><body xmlns="http://www.w3.org/1999/xhtml">
-            ${new XMLSerializer().serializeToString(parent.value)}
-            <style>${styleSrc}</style></body></foreignObject></svg>`
-                        .replace(/\n/g, "")
-                        .replace(/\t/g, "")
-                        .replace(/#/g, "%23");
+                downloadDom(parent.value);
             });
-        }
-
-        function handleChangeFontFamily(v) {
-            editElement.value.setFontFamily(v);
-        }
-
-        function handleChangeFontSize(v) {
-            editElement.value.setFontSize(v);
-        }
-
-        function handleChangeFontColor(v) {
-            editElement.value.setFontColor(v.target.value);
-        }
-
-        function handleChangeFontText(v) {
-            editElement.value.setText(v.target.value);
         }
 
         return {
@@ -541,19 +492,21 @@ export default {
             parent,
             editElement,
 
-            handleChangeImage,
+            handleMousedownScaleXY,
+            handleMousedownScaleX,
+            handleMousedownScaleY,
+            handleMousedownContent,
+            handleMousedownRotate,
+            handleDbClickContent,
             handleStartChangeText,
             handleChangeText,
-            handleFocus,
+            handleClickContent,
             handleMousedown,
-            handleHover,
-            handleUnHover,
+            handleMouseenterContent,
+            handleMouseleaveContent,
+
             handleAddMesh,
-            handleDownload,
-            handleChangeFontFamily,
-            handleChangeFontSize,
-            handleChangeFontColor,
-            handleChangeFontText
+            handleDownload
         };
     }
 };

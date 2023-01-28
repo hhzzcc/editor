@@ -1,4 +1,4 @@
-export function handleDragMeshXScale(element, mouse, step) {
+export function handleDragElementXScale(element, mouse, step) {
     const { x: centerX } = element.getCenterPosition();
     const { width } = element.state;
     const { x } = mouse;
@@ -15,7 +15,7 @@ export function handleDragMeshXScale(element, mouse, step) {
     }
 }
 
-export function handleDragMeshYScale(element, mouse, step) {
+export function handleDragElementYScale(element, mouse, step) {
     const { y: centerY } = element.getCenterPosition();
     const { height } = element.state;
     const { y } = mouse;
@@ -32,7 +32,7 @@ export function handleDragMeshYScale(element, mouse, step) {
     }
 }
 
-function handleDragMeshScaleXY(element, mouse, movement) {
+function handleDragElementScaleXY(element, mouse, movement) {
     const { x: centerX, y: centerY } = element.getCenterPosition();
     const { width, height } = element.state;
     const { x, y } = mouse;
@@ -72,7 +72,7 @@ function handleDragMeshScaleXY(element, mouse, movement) {
     }
 }
 
-function handleDragMeshFontSizeScale(element, mouse, originHeight) {
+function handleDragElementFontSizeScale(element, mouse, originHeight) {
     const {
         width: originWidth,
         height,
@@ -81,7 +81,7 @@ function handleDragMeshFontSizeScale(element, mouse, originHeight) {
     const { x: centerX } = element.getCenterPosition();
     const { x } = mouse;
     const originRow = originHeight / originFontSize;
-    const fontSize = height / originRow;
+    const fontSize = +(height / originRow).toFixed(2);
     element.setFontSize(fontSize);
     element.scaleX(fontSize / originFontSize);
 
@@ -92,15 +92,15 @@ function handleDragMeshFontSizeScale(element, mouse, originHeight) {
     }
 }
 
-export function handleDragMeshScale(element, mouse) {
+export function handleDragElementScale(element, mouse) {
     const { movementY, movementX } = mouse;
 
     if (element.elementType === "text") {
         const { height } = element.state;
-        handleDragMeshYScale(element, mouse, movementY);
-        handleDragMeshFontSizeScale(element, mouse, height);
+        handleDragElementYScale(element, mouse, movementY / 1.5);
+        handleDragElementFontSizeScale(element, mouse, height);
     } else {
-        handleDragMeshScaleXY(element, mouse, movementX);
+        handleDragElementScaleXY(element, mouse, movementX);
     }
 
     // if (element.elementType === "group") {
@@ -119,20 +119,22 @@ function normalize({ x, y }) {
     };
 }
 
-export function handleDragMeshRotate(element, mouse) {
+export function handleDragElementRotate(element, mouse) {
     const { x: centerX, y: centerY } = element.getCenterPosition();
     const { x, y } = mouse;
     const originUnitVector = { x: 0, y: 1 };
     const targetUnitVector = normalize({ x: x - centerX, y: y - centerY });
     const unit = x < centerX ? 1 : -1;
 
-    element.rotate(
-        (unit *
-            (Math.acos(
-                originUnitVector.x * targetUnitVector.x +
-                    originUnitVector.y * targetUnitVector.y
-            ) *
-                180)) /
-            Math.PI
+    element.setAngle(
+        Math.ceil(
+            (unit *
+                (Math.acos(
+                    originUnitVector.x * targetUnitVector.x +
+                        originUnitVector.y * targetUnitVector.y
+                ) *
+                    180)) /
+                Math.PI
+        )
     );
 }

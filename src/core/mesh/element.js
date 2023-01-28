@@ -73,7 +73,7 @@ export class Element {
         this.state.y = y;
     }
 
-    rotate(angle) {
+    setAngle(angle) {
         this.state.angle = angle;
     }
 

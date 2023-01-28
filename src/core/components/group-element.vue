@@ -6,13 +6,15 @@
         :visibleBoxScaleX="false"
         :visibleBoxScaleY="false"
         :style="style"
-        @mousedown-scale="(v) => $emit('drag-before', v)"
-        @mousedown-rotate="(v) => $emit('drag-before', v)"
+        @mousedown-scale-xy="$emit('mousedown-scale-xy')"
+        @mousedown-rotate="$emit('mousedown-scale-rotate')"
     >
         <div
             :class="bem('content')"
-            @mousedown="(e) => $emit('drag-before', { type: 'content', e })"
-            @click="(e) => $emit('focus', { type: 'content', e })"
+            @mousedown="$emit('mousedown-content')"
+            @mouseenter="$emit('mouseenter-content')"
+            @mouseleave="$emit('mouseleave-content')"
+            @click="$emit('click-content')"
         >
             <template v-for="(element, i) in children" :key="i">
                 <ImageElement
