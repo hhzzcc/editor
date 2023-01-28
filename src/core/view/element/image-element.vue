@@ -24,7 +24,7 @@
 
 <script>
 import { defineComponent, computed } from "vue";
-import { createNamespace } from "../utils/create-bem";
+import { createNamespace } from "../../utils/create-bem";
 import Border from "./border.vue";
 
 const [name, bem] = createNamespace("image-element");

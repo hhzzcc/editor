@@ -61,7 +61,7 @@
 <script>
 import { defineComponent } from "vue";
 import { RedoOutlined } from "@ant-design/icons-vue";
-import { createNamespace } from "../utils/create-bem";
+import { createNamespace } from "../../utils/create-bem";
 
 const [name, bem] = createNamespace("border");
 

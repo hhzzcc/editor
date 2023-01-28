@@ -32,7 +32,7 @@
 
 <script>
 import { defineComponent, computed } from "vue";
-import { createNamespace } from "../utils/create-bem";
+import { createNamespace } from "../../utils/create-bem";
 import Border from "./border.vue";
 import ImageElement from "./image-element.vue";
 import TextElement from "./text-element.vue";
