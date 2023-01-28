@@ -16,6 +16,7 @@
             <div class="home-view__content">
                 <div class="home-view__editor" ref="parent">
                     <template v-for="(element, i) in elements" :key="i">
+                        <!-- 图片 -->
                         <ImageElementComponent
                             v-if="element.elementType === 'image'"
                             v-bind="element.state"
@@ -36,16 +37,17 @@
                             @click-content="handleClickContent(element)"
                         />
 
+                        <!-- 文字 -->
                         <TextElementComponent
                             v-else-if="element.elementType === 'text'"
                             v-bind="element.state"
-                            @start-change-text="handleStartChangeText(element)"
                             @change-text="(v) => handleChangeText(v, element)"
                             @update-width="(v) => element.setWidth(v)"
                             @update-height="(v) => element.setHeight(v)"
                             @mousedown-scale-xy="
                                 handleMousedownScaleXY(element)
                             "
+                            @mousedown-scale-x="handleMousedownScaleX(element)"
                             @mousedown-rotate="handleMousedownRotate(element)"
                             @mousedown-content="handleMousedownContent(element)"
                             @mouseenter-content="
@@ -54,9 +56,16 @@
                             @mouseleave-content="
                                 handleMouseleaveContent(element)
                             "
-                            @click-content="handleClickContent(element)"
+                            @click-content="
+                                handleClickTextElementContent(element)
+                            "
+                            @mounted="
+                                (target) =>
+                                    handleTextElementMounted(element, target)
+                            "
                         />
 
+                        <!-- 组 -->
                         <GroupElementComponent
                             v-else-if="element.elementType === 'group'"
                             v-bind="element.state"
@@ -134,7 +143,7 @@ import ImageBar from "../../components/bar/image.vue";
 import TextBar from "../../components/bar/text.vue";
 import GroupBar from "../../components/bar/group.vue";
 
-import { onMounted, ref, reactive, computed, nextTick } from "vue";
+import { onMounted, ref, reactive, nextTick } from "vue";
 
 import { AdsorptionLine } from "../../core/utils/services/adsorption-line";
 import { Selection } from "../../core/utils/services/selection";
@@ -386,6 +395,22 @@ export default {
             element.focus();
         }
 
+        function handleClickTextElementContent(element) {
+            if (element.state.focus && !element.state.edit) {
+                textElement = element;
+                element.startEdit();
+                nextTick(() => {
+                    element.target.textEl.focus();
+                    const range = document.createRange();
+                    range.selectNodeContents(element.target.textEl);
+                    window.getSelection().removeAllRanges();
+                    window.getSelection().addRange(range);
+                });
+            } else {
+                handleClickContent(element);
+            }
+        }
+
         function handleMousedownScaleXY(element) {
             handleMousedown(element);
             dragScaleXYElement = element;
@@ -417,11 +442,16 @@ export default {
             editElement.value = element;
         }
 
+        function handleTextElementMounted(element, target) {
+            element.setTarget(target);
+            element.updateSize();
+        }
+
         // 置顶
         function handleTop(element) {
             for (let i = 0; i < elements.length; i++) {
                 if (element === elements[i]) {
-                    elements[i].setZIndex(1);
+                    element.setZIndex(1);
                 } else {
                     elements[i].setZIndex(null);
                 }
@@ -443,13 +473,9 @@ export default {
             element.setImgSrc(src);
         }
 
-        function handleStartChangeText(element) {
-            textElement = element;
-            element.startEdit();
-        }
-
-        function handleChangeText(value, currentElement) {
-            currentElement.setText(value);
+        function handleChangeText(text, element) {
+            element.setText(text);
+            element.updateSize();
         }
 
         function handleAddMesh(type) {
@@ -491,6 +517,7 @@ export default {
             elements,
             parent,
             editElement,
+            handleTextElementMounted,
 
             handleMousedownScaleXY,
             handleMousedownScaleX,
@@ -498,9 +525,9 @@ export default {
             handleMousedownContent,
             handleMousedownRotate,
             handleDbClickContent,
-            handleStartChangeText,
             handleChangeText,
             handleClickContent,
+            handleClickTextElementContent,
             handleMousedown,
             handleMouseenterContent,
             handleMouseleaveContent,

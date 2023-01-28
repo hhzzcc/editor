@@ -1,30 +1,30 @@
 <template>
     <Border
+        ref="el"
         :class="bem()"
         :visibleBox="visibleBox"
         :visibleBoxScale="visibleBoxScale"
         :visibleBoxScaleY="false"
         :style="style"
         @mousedown-scale-xy="$emit('mousedown-scale-xy')"
+        @mousedown-scale-x="$emit('mousedown-scale-x')"
         @mousedown-rotate="$emit('mousedown-scale-rotate')"
     >
         <div
+            ref="contentEl"
             :class="bem('content')"
             @mousedown="$emit('mousedown-content')"
             @mouseenter="$emit('mouseenter-content')"
             @mouseleave="$emit('mouseleave-content')"
-            @click="handleClick"
+            @click="$emit('click-content')"
         >
             <div
-                :class="bem('input', { visible: edit })"
-                ref="input"
-                :contenteditable="true"
+                ref="textEl"
+                :class="bem('text', { edit })"
+                :contenteditable="edit"
                 :style="textStyle"
-                @input="handleInput"
+                @input="(e) => $emit('change-text', e.target.textContent)"
             >
-                {{ text }}
-            </div>
-            <div :class="bem('text')" :style="textStyle" v-show="!edit">
                 {{ text }}
             </div>
         </div>
@@ -104,7 +104,9 @@ export default defineComponent({
     setup(props, { emit }) {
         const visibleBox = computed(() => props.hover || props.focus);
         const visibleBoxScale = computed(() => props.focus && props.operable);
-        const input = ref(null);
+        const el = ref(null);
+        const contentEl = ref(null);
+        const textEl = ref(null);
 
         const style = computed(() => {
             return {
@@ -124,45 +126,20 @@ export default defineComponent({
             };
         });
 
-        function handleClick() {
-            if (props.focus && !props.edit) {
-                emit("start-change-text");
-                nextTick(() => {
-                    input.value.focus();
-                    const range = document.createRange();
-                    range.selectNodeContents(input.value);
-                    window.getSelection().removeAllRanges();
-                    window.getSelection().addRange(range);
-                });
-            } else {
-                emit("click-content");
-            }
-        }
-
-        function updateHeight() {
-            emit("update-height", input.value.offsetHeight);
-        }
-
-        function updateWidth() {
-            emit("update-width", input.value.offsetWidth);
-        }
-
-        function handleInput(e) {
-            emit("change-text", e.target.textContent);
-            updateHeight();
-        }
-
         onMounted(() => {
-            updateWidth();
-            updateHeight();
+            emit("mounted", {
+                el: el.value,
+                textEl: textEl.value,
+                contentEl: contentEl.value
+            });
         });
 
         return {
             visibleBox,
             visibleBoxScale,
-            input,
-            handleClick,
-            handleInput,
+            el,
+            textEl,
+            contentEl,
 
             style,
             textStyle,
@@ -184,8 +161,7 @@ export default defineComponent({
         cursor: move;
     }
 
-    &__text,
-    &__input {
+    &__text {
         max-width: 100%;
         position: absolute;
         left: 0;
@@ -194,13 +170,9 @@ export default defineComponent({
         overflow-wrap: break-word;
         user-select: none;
         outline: none;
-    }
 
-    &__input {
-        opacity: 0;
-        cursor: text;
-        &--visible {
-            opacity: 1;
+        &--edit {
+            cursor: text;
         }
     }
 }

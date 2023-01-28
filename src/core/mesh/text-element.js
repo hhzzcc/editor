@@ -10,11 +10,20 @@ export class TextElement extends Element {
     }) {
         super(options);
         this.elementType = "text";
+        this.target = {
+            el: null,
+            contentEl: null,
+            textEl: null
+        };
 
         this.setFontSize(fontSize);
         this.setFontColor(fontColor);
         this.setFontFamily(fontFamily);
         this.setText(text);
+    }
+
+    setTarget(target) {
+        this.target = target;
     }
 
     setFontColor(fontColor) {
@@ -39,5 +48,21 @@ export class TextElement extends Element {
 
     endEdit() {
         this.state.edit = false;
+    }
+
+    updateWidth() {
+        if (!this.target.textEl) return;
+
+        this.setWidth(this.target.textEl.offsetWidth);
+    }
+
+    updateHeight() {
+        if (!this.target.textEl) return;
+        this.setHeight(this.target.textEl.offsetHeight);
+    }
+
+    updateSize() {
+        this.updateWidth();
+        this.updateHeight();
     }
 }

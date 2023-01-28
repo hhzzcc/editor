@@ -13,6 +13,11 @@ export function handleDragElementXScale(element, mouse, step) {
     else if (x > centerX) {
         element.setWidth(width + movementX);
     }
+
+    // 文字拉升需要更新高度
+    if (element.elementType === "text") {
+        element.updateHeight();
+    }
 }
 
 export function handleDragElementYScale(element, mouse, step) {
