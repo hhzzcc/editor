@@ -56,9 +56,12 @@
                     :x="editElement.state.x"
                     :y="editElement.state.y"
                     :angle="editElement.state.angle"
+                    :temporary="editElement.state.temporary"
                     @change-x="(v) => editElement.setX(v)"
                     @change-y="(v) => editElement.setY(v)"
                     @change-angle="(v) => editElement.setAngle(v)"
+                    @change-permanent="() => editElement.permanent()"
+                    @change-temporary="() => editElement.temporary()"
                 />
             </div>
         </div>

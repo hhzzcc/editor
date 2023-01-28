@@ -11,17 +11,22 @@
             @change="(v) => $emit('change-angle', +v.target.value)"
             ><template #addonBefore>旋转角度</template>
         </Input>
+        <Button v-if="temporary" @click="$emit('change-permanent')"
+            >成组</Button
+        >
+        <Button v-else @click="$emit('change-temporary')">解组</Button>
     </div>
 </template>
 
 <script>
 import { defineComponent } from "vue";
-import { Input } from "ant-design-vue";
+import { Input, Button } from "ant-design-vue";
 
 export default defineComponent({
     name: "group-bar",
     components: {
-        Input
+        Input,
+        Button
     },
     props: {
         x: {
@@ -43,6 +48,10 @@ export default defineComponent({
         angle: {
             type: [String, Number],
             default: 0
+        },
+        temporary: {
+            type: Boolean,
+            default: false
         }
     }
 });

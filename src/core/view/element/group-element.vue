@@ -25,6 +25,10 @@
                     v-else-if="element.elementType === 'text'"
                     v-bind="element.state"
                 />
+                <GroupElement
+                    v-else-if="element.elementType === 'group'"
+                    v-bind="element.state"
+                />
             </template>
         </div>
     </Border>
@@ -36,6 +40,7 @@ import { createNamespace } from "../../utils/create-bem";
 import Border from "./border.vue";
 import ImageElement from "./image-element.vue";
 import TextElement from "./text-element.vue";
+import GroupElement from "./group-element.vue";
 
 const [name, bem] = createNamespace("group-element");
 
@@ -44,7 +49,8 @@ export default defineComponent({
     components: {
         Border,
         ImageElement,
-        TextElement
+        TextElement,
+        GroupElement
     },
     props: {
         width: {

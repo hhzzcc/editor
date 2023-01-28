@@ -168,6 +168,7 @@ export default defineComponent({
         top: 0;
         display: block;
         overflow-wrap: break-word;
+        word-break: break-all;
         user-select: none;
         outline: none;
 

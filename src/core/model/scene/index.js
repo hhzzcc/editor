@@ -220,8 +220,8 @@ export function useScene() {
         });
     }
 
-    function initMouseupEvent() {
-        document.addEventListener("mouseup", () => {
+    function initMouseupEvent(sceneEl) {
+        sceneEl.addEventListener("mouseup", () => {
             mousedown = false;
             mouseDownElement = null;
             dragTransformElement = null;
