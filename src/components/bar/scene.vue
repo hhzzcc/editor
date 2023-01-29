@@ -1,6 +1,6 @@
 <template>
     <div class="scene-bar">
-        <div>画布尺寸</div>
+        <div>画布</div>
         <Input
             :value="width"
             @change="(v) => $emit('change-width', +v.target.value)"

@@ -1,31 +1,43 @@
 import { GroupElement } from "../../model/element/group-element";
 
-function handleGroupSize(elements) {
-    let top = null;
-    let right = null;
-    let bottom = null;
-    let left = null;
+function computedGroupSize(elements) {
+    let minX = null;
+    let maxX = null;
+    let minY = null;
+    let maxY = null;
 
     for (let i = 0; i < elements.length; i++) {
         const element = elements[i];
-        const { x, y, width, height } = element.state;
+        const [p1, p2, p3, p4] = element.getPointPosition();
 
-        top = top === null ? y : Math.min(top, y);
-        right = right === null ? x + width : Math.max(right, x + width);
-        bottom = bottom === null ? y + height : Math.max(bottom, y + height);
-        left = left === null ? x : Math.min(left, x);
+        minX =
+            minX === null
+                ? Math.min(p1.x, p2.x, p3.x, p4.x)
+                : Math.min(minX, p1.x, p2.x, p3.x, p4.x);
+        minY =
+            minY === null
+                ? Math.min(p1.y, p2.y, p3.y, p4.y)
+                : Math.min(minY, p1.y, p2.y, p3.y, p4.y);
+        maxX =
+            maxX === null
+                ? Math.max(p1.x, p2.x, p3.x, p4.x)
+                : Math.max(maxX, p1.x, p2.x, p3.x, p4.x);
+        maxY =
+            maxY === null
+                ? Math.max(p1.y, p2.y, p3.y, p4.y)
+                : Math.max(maxY, p1.y, p2.y, p3.y, p4.y);
     }
 
     return {
-        x: left,
-        y: top,
-        width: right - left,
-        height: bottom - top
+        x: minX,
+        y: minY,
+        width: maxX - minX,
+        height: maxY - minY
     };
 }
 
 export function createTemporary(children, elements) {
-    const { x, y, width, height } = handleGroupSize(children);
+    const { x, y, width, height } = computedGroupSize(children);
     const group = new GroupElement({
         x,
         y,

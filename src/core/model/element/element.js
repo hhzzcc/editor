@@ -1,3 +1,12 @@
+function rotateVector(vector, radius) {
+    const { x, y } = vector;
+
+    return {
+        x: x * Math.cos(radius) - y * Math.sin(radius),
+        y: x * Math.sin(radius) + y * Math.cos(radius)
+    };
+}
+
 export class Element {
     constructor(options = {}) {
         const {
@@ -63,6 +72,31 @@ export class Element {
 
     transformY(y) {
         this.setY(this.state.y + y);
+    }
+
+    // 相对位置转绝对位置
+    toAbsolutePosition(relativePosition) {
+        const { x, y, width, height } = this.state;
+        return {
+            x: relativePosition.x + x + width / 2,
+            y: y + height / 2 - relativePosition.y
+        };
+    }
+
+    // 获取顶点绝对位置
+    getPointPosition() {
+        const { width, height, angle } = this.state;
+        const leftTopVector = { x: -width / 2, y: height / 2 };
+        const rightTopVector = { x: width / 2, y: height / 2 };
+        const rightBottomVector = { x: width / 2, y: -height / 2 };
+        const leftBottomVector = { x: -width / 2, y: -height / 2 };
+        const radius = (angle * Math.PI) / 180;
+        return [
+            this.toAbsolutePosition(rotateVector(leftTopVector, radius)),
+            this.toAbsolutePosition(rotateVector(rightTopVector, radius)),
+            this.toAbsolutePosition(rotateVector(rightBottomVector, radius)),
+            this.toAbsolutePosition(rotateVector(leftBottomVector, radius))
+        ];
     }
 
     setX(x) {
