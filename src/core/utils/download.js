@@ -1,6 +1,47 @@
-export function downloadDom(el) {
+function getBase64(imgUrl) {
+    return new Promise((resolve) => {
+        if (imgUrl.startsWith("data:")) {
+            resolve(imgUrl);
+            return;
+        }
+
+        window.URL = window.URL || window.webkitURL;
+        const xhr = new XMLHttpRequest();
+        xhr.open("get", imgUrl, true);
+        xhr.responseType = "blob";
+        xhr.onload = function () {
+            if (this.status == 200) {
+                //得到一个blob对象
+                const blob = this.response;
+                const fileReader = new FileReader();
+                fileReader.onloadend = function (e) {
+                    resolve(e.target.result);
+                };
+                fileReader.readAsDataURL(blob);
+            }
+        };
+        xhr.send();
+    });
+}
+
+export async function downloadDom(el) {
     const width = el.offsetWidth;
     const height = el.offsetHeight;
+
+    const imgs = el.querySelectorAll("img");
+    const promises = [];
+    for (let i = 0; i < imgs.length; i++) {
+        promises.push(
+            new Promise((resolve) => {
+                const img = imgs[i];
+                getBase64(img.src).then((base64) => {
+                    img.src = base64;
+                    resolve();
+                });
+            })
+        );
+    }
+    await Promise.all(promises);
 
     const tempImg = new Image();
     tempImg.width = width;

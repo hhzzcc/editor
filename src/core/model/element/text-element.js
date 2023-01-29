@@ -35,7 +35,7 @@ export class TextElement extends Element {
     }
 
     setFontSize(fontSize) {
-        this.state.fontSize = fontSize;
+        this.state.fontSize = +fontSize.toFixed(2);
     }
 
     setText(text) {

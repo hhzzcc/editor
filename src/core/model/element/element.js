@@ -66,15 +66,15 @@ export class Element {
     }
 
     setX(x) {
-        this.state.x = x;
+        this.state.x = +x.toFixed(2);
     }
 
     setY(y) {
-        this.state.y = y;
+        this.state.y = +y.toFixed(2);
     }
 
     setAngle(angle) {
-        this.state.angle = angle;
+        this.state.angle = Math.ceil(angle);
     }
 
     scale(x, y) {
@@ -91,11 +91,13 @@ export class Element {
     }
 
     setWidth(width) {
-        this.state.width = width;
+        this.state.width = +width.toFixed(2);
+        return this.state.width;
     }
 
     setHeight(height) {
-        this.state.height = height;
+        this.state.height = +height.toFixed(2);
+        return this.state.height;
     }
 
     setZIndex(zIndex) {

@@ -96,11 +96,38 @@ export default {
 
         onMounted(() => {
             scene.mounted(parent.value);
+            mock();
         });
+
+        function mock() {
+            scene.add([
+                new ImageElement({
+                    imgSrc: "https://st0.dancf.com/static/02/202301290843-d51a.jpg",
+                    width: 100,
+                    height: 100,
+                    x: 0,
+                    y: 0
+                }),
+                new ImageElement({
+                    imgSrc: "https://st-gdx.dancf.com/gaodingx/4323/configs/system/20210728-095726-adc9.svg",
+                    width: 50,
+                    height: 100,
+                    x: 100,
+                    y: 100
+                }),
+                new TextElement({
+                    text: "1是文字，，，a￥！%%……￥aaa hello aa的的",
+                    width: 200,
+                    height: 100,
+                    x: 100,
+                    y: 200
+                })
+            ]);
+        }
 
         function handleAddElement(type) {
             if (type === "image") {
-                scene.add(
+                scene.add([
                     new ImageElement({
                         imgSrc: "https://st-gdx.dancf.com/gaodingx/4323/configs/system/20210728-095726-adc9.svg",
                         width: 100,
@@ -108,9 +135,9 @@ export default {
                         x: 0,
                         y: 0
                     })
-                );
+                ]);
             } else if (type === "text") {
-                scene.add(
+                scene.add([
                     new TextElement({
                         text: "输入一段文字",
                         width: 200,
@@ -118,7 +145,7 @@ export default {
                         x: 100,
                         y: 200
                     })
-                );
+                ]);
             }
         }
 

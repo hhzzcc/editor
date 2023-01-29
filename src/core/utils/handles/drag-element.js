@@ -86,7 +86,7 @@ function handleDragElementFontSizeScale(element, mouse, originHeight) {
     const { x: centerX } = element.getCenterPosition();
     const { x } = mouse;
     const originRow = originHeight / originFontSize;
-    const fontSize = +(height / originRow).toFixed(2);
+    const fontSize = +(height / originRow);
     element.setFontSize(fontSize);
     element.scaleX(fontSize / originFontSize);
 
@@ -113,13 +113,28 @@ export function handleDragElementScale(element, mouse) {
             const child = element.state.children[i];
             const widthRadio = newWidth / preWidth;
             const heightRadio = newHeight / preHeight;
-            child.setWidth(widthRadio * child.state.width);
-            child.setHeight(heightRadio * child.state.height);
-            child.setX(widthRadio * child.state.x);
-            child.setY(heightRadio * child.state.y);
-            // if (child.elementType === "group") {
-            //     handleDragElementScale(child, mouse);
-            // }
+
+            if (child.elementType === "group") {
+                handleDragElementScale(child, mouse);
+                child.setWidth(widthRadio * child.state.width);
+                child.setHeight(heightRadio * child.state.height);
+                child.setX(widthRadio * child.state.x);
+                child.setY(heightRadio * child.state.y);
+            } else if (child.elementType === "text") {
+                const row = child.state.height / child.state.fontSize;
+                child.setWidth(widthRadio * child.state.width);
+                const height = child.setHeight(
+                    heightRadio * child.state.height
+                );
+                child.setX(widthRadio * child.state.x);
+                child.setY(heightRadio * child.state.y);
+                child.setFontSize(height / row);
+            } else {
+                child.setWidth(widthRadio * child.state.width);
+                child.setHeight(heightRadio * child.state.height);
+                child.setX(widthRadio * child.state.x);
+                child.setY(heightRadio * child.state.y);
+            }
         }
     } else {
         handleDragElementScaleXY(element, mouse, movementX);
@@ -142,14 +157,12 @@ export function handleDragElementRotate(element, mouse) {
     const unit = x < centerX ? 1 : -1;
 
     element.setAngle(
-        Math.ceil(
-            (unit *
-                (Math.acos(
-                    originUnitVector.x * targetUnitVector.x +
-                        originUnitVector.y * targetUnitVector.y
-                ) *
-                    180)) /
-                Math.PI
-        )
+        (unit *
+            (Math.acos(
+                originUnitVector.x * targetUnitVector.x +
+                    originUnitVector.y * targetUnitVector.y
+            ) *
+                180)) /
+            Math.PI
     );
 }
