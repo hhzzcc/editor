@@ -9,12 +9,9 @@ import {
     handleDragElementYScale,
     handleDragElementRotate
 } from "../../utils/handles/drag-element";
-import { handleGroupSize } from "../../utils/handles/group";
 import { loadImage } from "../../utils/handles/dbclick-element";
 
-import { ImageElement } from "../element/image-element";
-import { TextElement } from "../element/text-element";
-import { GroupElement } from "../element/group-element";
+import { createTemporary, destroyTemporary } from "../../utils/handles/group";
 
 import SceneComponent from "../../view/scene/index.vue";
 
@@ -33,7 +30,7 @@ export function useScene() {
     let dragScaleYElement = null;
     let dragRotateElement = null;
 
-    function mounted(sceneEl) {
+    function mounted({ sceneEl, mousedownEl, mousemoveEl, mouseupEl }) {
         const vm = createVNode(SceneComponent, {
             elements,
             handleTextElementMounted,
@@ -63,17 +60,17 @@ export function useScene() {
             height: sceneEl.offsetHeight,
             $parent: sceneEl
         });
-        initMousedownEvent(sceneEl);
-        initMousemoveEvent(sceneEl);
-        initMouseupEvent(sceneEl);
+        initMousedownEvent(sceneEl, mousedownEl);
+        initMousemoveEvent(sceneEl, mousemoveEl);
+        initMouseupEvent(mouseupEl);
     }
 
     function add(element) {
         elements.push(...element);
     }
 
-    function initMousedownEvent(sceneEl) {
-        sceneEl.addEventListener("mousedown", (e) => {
+    function initMousedownEvent(sceneEl, mousedownEl) {
+        mousedownEl.addEventListener("mousedown", (e) => {
             mousedown = true;
 
             if (!mouseDownElement) {
@@ -97,25 +94,12 @@ export function useScene() {
                 if (element !== mouseDownElement) {
                     element.blur();
 
-                    // 存在临时组则解开
+                    // 销毁临时组
                     if (
                         element.elementType === "group" &&
                         element.state.temporary
                     ) {
-                        for (
-                            let j = 0;
-                            j < element.state.children.length;
-                            j++
-                        ) {
-                            const child = element.state.children[j];
-                            child.setPosition(
-                                child.state.x + element.state.x,
-                                child.state.y + element.state.y
-                            );
-                            child.operable();
-                            elements.push(child);
-                        }
-
+                        destroyTemporary(element, elements);
                         elements.splice(i, 1);
                         i--;
                     }
@@ -126,11 +110,11 @@ export function useScene() {
         });
     }
 
-    function initMousemoveEvent(sceneEl) {
+    function initMousemoveEvent(sceneEl, mousemoveEl) {
         let prevMousedownLeft = 0,
             prevMousedownTop = 0;
 
-        document.addEventListener("mousemove", (e) => {
+        mousemoveEl.addEventListener("mousemove", (e) => {
             const mouse = {
                 movementX: e.clientX - prevMousedownLeft,
                 movementY: e.clientY - prevMousedownTop,
@@ -193,52 +177,28 @@ export function useScene() {
         });
     }
 
-    function initMouseupEvent(sceneEl) {
-        sceneEl.addEventListener("mouseup", () => {
-            mousedown = false;
-            mouseDownElement = null;
-            dragTransformElement = null;
-            dragScaleXYElement = null;
-            dragScaleXElement = null;
-            dragScaleYElement = null;
-            dragRotateElement = null;
+    function clear() {
+        mousedown = false;
+        mouseDownElement = null;
+        dragTransformElement = null;
+        dragScaleXYElement = null;
+        dragScaleXElement = null;
+        dragScaleYElement = null;
+        dragRotateElement = null;
 
-            elementTransform.clear();
-            selection.clear();
-            adsorptionLine.clear();
+        elementTransform.clear();
+        selection.clear();
+        adsorptionLine.clear();
+    }
 
+    function initMouseupEvent(mouseupEl) {
+        mouseupEl.addEventListener("mouseup", () => {
+            clear();
+
+            // 框选创建临时组
             const collectElements = selection.getCollectElements();
-            if (collectElements && collectElements.length) {
-                const { x, y, width, height } =
-                    handleGroupSize(collectElements);
-                const group = new GroupElement({
-                    x,
-                    y,
-                    width,
-                    height,
-                    children: collectElements
-                });
-
-                for (let i = 0; i < collectElements.length; i++) {
-                    const collectElement = collectElements[i];
-                    for (let j = 0; j < elements.length; j++) {
-                        const element = elements[j];
-                        if (element === collectElement) {
-                            element.setPosition(
-                                element.state.x - x,
-                                element.state.y - y
-                            );
-                            element.unHover();
-                            element.inoperable();
-                            element.blur();
-                            elements.splice(j, 1);
-                            j--;
-                        }
-                    }
-                }
-                group.temporary();
-                group.focus();
-                elements.push(group);
+            if (collectElements && collectElements.length > 1) {
+                const group = createTemporary(collectElements, elements);
                 editElement.value = group;
             }
         });

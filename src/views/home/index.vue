@@ -13,7 +13,7 @@
                 <button @click="handleAddElement('text')">添加文字</button>
             </div>
 
-            <div class="home-view__content">
+            <div class="home-view__content" ref="content">
                 <div class="home-view__editor" ref="parent"></div>
             </div>
 
@@ -92,10 +92,16 @@ export default {
     },
     setup() {
         const parent = ref(null);
+        const content = ref(null);
         const scene = useScene();
 
         onMounted(() => {
-            scene.mounted(parent.value);
+            scene.mounted({
+                sceneEl: parent.value,
+                mousedownEl: content.value,
+                mousemoveEl: content.value,
+                mouseupEl: content.value
+            });
             mock();
         });
 
@@ -110,7 +116,7 @@ export default {
                 }),
                 new ImageElement({
                     imgSrc: "https://st-gdx.dancf.com/gaodingx/4323/configs/system/20210728-095726-adc9.svg",
-                    width: 50,
+                    width: 200,
                     height: 100,
                     x: 100,
                     y: 100
@@ -161,6 +167,7 @@ export default {
 
         return {
             parent,
+            content,
             editElement: scene.editElement,
 
             handleAddElement,
