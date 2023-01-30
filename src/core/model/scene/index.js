@@ -1,4 +1,12 @@
-import { ref, reactive, nextTick, createVNode, render } from "vue";
+import {
+    ref,
+    reactive,
+    nextTick,
+    createVNode,
+    render,
+    computed,
+    watch
+} from "vue";
 
 import { AdsorptionLine } from "../../utils/services/adsorption-line";
 import { Selection } from "../../utils/services/selection";
@@ -14,21 +22,96 @@ import { loadImage } from "../../utils/handles/dbclick-element";
 import { createTemporary, destroyTemporary } from "../../utils/handles/group";
 
 import SceneComponent from "../../view/scene/index.vue";
+import { History } from "../../utils/services/history";
 
 export function useScene() {
     const elements = reactive([]);
     const editElement = ref(null);
     const elementTransform = new ElementTransform();
+    const history = new History();
 
     let adsorptionLine, selection;
     let mouseDownElement = null;
     let textElement = null;
-    let mousedown = false;
+    let mousedown = ref(false);
     let dragTransformElement = null;
     let dragScaleXYElement = null;
     let dragScaleXElement = null;
     let dragScaleYElement = null;
     let dragRotateElement = null;
+
+    let preElements = [];
+
+    watch(
+        () => mousedown.value,
+        (v) => {
+            if (v) {
+                preElements = [];
+                for (let i = 0; i < elements.length; i++) {
+                    const element = elements[i];
+
+                    const params = {
+                        elementType: element.elementType,
+                        elementId: element.elementId,
+                        state: { ...element.state }
+                    };
+
+                    delete params.state.hover;
+                    delete params.state.focus;
+                    delete params.state.zIndex;
+
+                    preElements.push(params);
+                }
+            } else {
+                diff(preElements, elements);
+            }
+        }
+    );
+
+    function diff(preElements, elements) {
+        if (preElements.length === 0) {
+            elements.splice(0, elements.length - 1);
+        } else {
+            for (let i = 0; i < preElements.length; i++) {
+                const preElement = preElements[i];
+                for (let j = 0; j < elements.length; j++) {
+                    const element = elements[j];
+                    // 相同element之间
+                    if (
+                        preElement.elementId === element.elementId &&
+                        element.elementType === element.elementType
+                    ) {
+                        // state不同需要做更新
+                        let diffs = [];
+                        for (let preElementStateKey in preElement.state) {
+                            if (
+                                preElement.state[preElementStateKey] !==
+                                element.state[preElementStateKey]
+                            ) {
+                                diffs.push(() => {
+                                    element[
+                                        `set${
+                                            preElementStateKey
+                                                .slice(0, 1)
+                                                .toUpperCase() +
+                                            preElementStateKey.slice(1)
+                                        }`
+                                    ](preElement.state[preElementStateKey]);
+                                });
+                            }
+                        }
+                        if (diffs.length) {
+                            history.add(() => {
+                                for (let i = 0; i < diffs.length; i++) {
+                                    diffs[i]();
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     function mounted({ sceneEl, mousedownEl, mousemoveEl, mouseupEl }) {
         const vm = createVNode(SceneComponent, {
@@ -65,13 +148,13 @@ export function useScene() {
         initMouseupEvent(mouseupEl);
     }
 
-    function add(element) {
-        elements.push(...element);
+    function add(v) {
+        elements.push(...v);
     }
 
     function initMousedownEvent(sceneEl, mousedownEl) {
         mousedownEl.addEventListener("mousedown", (e) => {
-            mousedown = true;
+            mousedown.value = true;
 
             if (!mouseDownElement) {
                 editElement.value = null;
@@ -125,7 +208,7 @@ export function useScene() {
             prevMousedownLeft = e.clientX;
             prevMousedownTop = e.clientY;
 
-            if (mousedown) {
+            if (mousedown.value) {
                 // 拖拽element做xy轴缩放
                 if (dragScaleXYElement) {
                     handleDragElementScale(dragScaleXYElement, mouse);
@@ -178,7 +261,7 @@ export function useScene() {
     }
 
     function clear() {
-        mousedown = false;
+        mousedown.value = false;
         mouseDownElement = null;
         dragTransformElement = null;
         dragScaleXYElement = null;
@@ -294,6 +377,7 @@ export function useScene() {
     return {
         elements,
         editElement,
+        history,
 
         mounted,
         add

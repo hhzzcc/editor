@@ -1,10 +1,14 @@
 <template>
     <div class="home-view">
         <div class="home-view__header">
-            <img
-                class="home-view__logo"
-                src="https://st0.dancf.com/static/02/202301130825-f513.png"
-            />
+            <div>
+                <img
+                    class="home-view__logo"
+                    src="https://st0.dancf.com/static/02/202301130825-f513.png"
+                />
+                <button @click="handleUndoHistory">后退</button>
+                <button @click="handleRedoHistory">前进</button>
+            </div>
             <button @click="handleDownload">下载</button>
         </div>
         <div class="home-view__body">
@@ -165,13 +169,23 @@ export default {
             });
         }
 
+        function handleUndoHistory() {
+            scene.history.undo();
+        }
+
+        function handleRedoHistory() {
+            scene.history.redo();
+        }
+
         return {
             parent,
             content,
             editElement: scene.editElement,
 
             handleAddElement,
-            handleDownload
+            handleDownload,
+            handleUndoHistory,
+            handleRedoHistory
         };
     }
 };

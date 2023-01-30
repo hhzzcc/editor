@@ -7,6 +7,7 @@ function rotateVector(vector, radius) {
     };
 }
 
+let id = 0;
 export class Element {
     constructor(options = {}) {
         const {
@@ -18,7 +19,8 @@ export class Element {
             hover = false,
             focus = false,
             operable = true,
-            zIndex = null
+            zIndex = null,
+            elementId = null
         } = options;
         this.state = {
             x,
@@ -31,6 +33,13 @@ export class Element {
             zIndex,
             angle
         };
+
+        if (elementId) {
+            this.elementId = elementId;
+        } else {
+            this.elementId = id;
+            id++;
+        }
     }
 
     getPosition() {
